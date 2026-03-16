@@ -198,8 +198,48 @@ body {
 .status-done { color: var(--green); font-weight: 700; font-size: 12px; }
 .status-pending { color: var(--text-muted); font-weight: 700; font-size: 12px; }
 
-.btn-icon { background: #2c2c2e; border: none; color: white; width: 36px; height: 36px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
-.btn-icon:hover { background: var(--accent); }
+.btn-icon { 
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid var(--glass-border); 
+    color: var(--accent); 
+    width: 42px; 
+    height: 42px; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: 0.2s; 
+}
+.btn-icon:hover { background: var(--accent); color: black; transform: scale(1.1); }
+.btn-icon i { font-size: 16px; color: inherit; }
+
+/* Botón de Escaneo Premium */
+.btn-primary-premium {
+    background: var(--gradient-premium);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 15px var(--accent-glow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+}
+
+.btn-primary-premium:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 20px var(--accent-glow);
+}
+
+.btn-primary-premium i {
+    font-size: 18px;
+}
 
 /* WORLD ALERT */
 .map-card { text-align: center; }
