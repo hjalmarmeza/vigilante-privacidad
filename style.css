@@ -566,3 +566,28 @@ body {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Section Display Classes */
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.view-section.active {
+    display: block;
+}
+
+/* Placeholder styles for other sections */
+.placeholder-view {
+    padding: 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.placeholder-view i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--accent-cyan);
+}

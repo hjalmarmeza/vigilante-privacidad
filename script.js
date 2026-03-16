@@ -6,22 +6,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NAVEGACIÓN LATERAL ---
     const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.view-section');
+
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const view = item.getAttribute('data-view');
             
-            // Actualizar clase activa
+            // Actualizar clase activa en nav
             navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
 
+            // Cambiar visibilidad de secciones
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${view}-view`) {
+                    section.classList.add('active');
+                }
+            });
+
             console.log(`Cambiando a vista: ${view}`);
-            // Aquí podríamos ocultar/mostrar secciones si tuvieramos IDs de contenedores
+            
+            // Especial: Si es configuración, abrimos el modal
             if (view === 'configuracion') {
                 document.getElementById('openConfig').click();
+                // Volver a dashboard visualmente después de abrir modal para no dejar la pantalla vacía
+                item.classList.remove('active');
+                navItems[0].classList.add('active');
+                document.getElementById('dashboard-view').classList.add('active');
             }
         });
     });
+
+    // --- BARRA DE BÚSQUEDA ---
+    const searchInput = document.querySelector('.search-bar input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.broker-table tbody tr');
+            rows.forEach(row => {
+                const name = row.querySelector('.broker-name span')?.textContent.toLowerCase() || "";
+                row.style.display = name.includes(query) ? '' : 'none';
+            });
+        });
+    }
 
     // --- CONEXIÓN REAL CON FIRESTORE (STATS Y TABLA) ---
     if (db) {
