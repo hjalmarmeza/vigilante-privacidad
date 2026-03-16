@@ -112,13 +112,92 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function handleAction(name, isSend) {
+    async function handleAction(name, isSend) {
         if (isSend) {
-            alert(`Solicitud enviada a ${name}. Procesando...`);
+            const btn = event.currentTarget;
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            console.log(`Simulando envío de solicitud a ${name}...`);
+            
+            // Simulación de delay de red
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            alert(`Solicitud de borrado enviada a ${name} vía AgentMail. Podrás ver el seguimiento en la pestaña 'Historial'.`);
+            
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.style.color = 'var(--green)';
+            
+            // Aquí en el futuro conectaríamos con una Cloud Function que llame a bot/index.js
         } else {
-            alert(`Detalles de ${name}: Verificado bajo estándar GDPR.`);
+            alert(`Detalles de ${name}: Este broker tiene un perfil de riesgo ALTO debido a la venta de historiales de navegación y datos biométricos.`);
         }
     }
+
+    // --- ESCANEO GLOBAL ---
+    const startScanBtn = document.getElementById('startFullScan');
+    if (startScanBtn) {
+        startScanBtn.addEventListener('click', async () => {
+            startScanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Escaneando Red...';
+            startScanBtn.disabled = true;
+
+            const sources = document.querySelectorAll('.source-item span:last-child');
+            const exposureVal = document.querySelector('.exposure-stat .stat-value');
+            const statFill = document.querySelector('.stat-fill');
+
+            // Simulación de escaneo progresivo
+            for (let i = 0; i < sources.length; i++) {
+                sources[i].className = 'status-running';
+                sources[i].textContent = 'Buscando...';
+                await new Promise(r => setTimeout(r, 1500));
+                sources[i].className = 'status-done';
+                sources[i].textContent = 'Completado';
+                
+                // Actualizar números visuales
+                if (exposureVal) {
+                    const current = parseInt(exposureVal.textContent) || 0;
+                    exposureVal.textContent = current + Math.floor(Math.random() * 20);
+                }
+                if (statFill) {
+                    statFill.style.width = `${30 + (i * 20)}%`;
+                }
+            }
+
+            startScanBtn.innerHTML = '<i class="fas fa-check"></i> Escaneo Finalizado';
+            startScanBtn.style.background = 'var(--green)';
+            
+            setTimeout(() => {
+                startScanBtn.innerHTML = 'Iniciar Escaneo Global';
+                startScanBtn.style.background = '';
+                startScanBtn.disabled = false;
+            }, 3000);
+        });
+    }
+
+    // --- FILTROS DE HISTORIAL ---
+    const pills = document.querySelectorAll('.filter-pills .pill');
+    pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            pills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            const filter = pill.textContent.toLowerCase();
+            const items = document.querySelectorAll('.timeline-item');
+            
+            items.forEach(item => {
+                const type = item.querySelector('.msg-type').textContent.toLowerCase();
+                if (filter === 'todo') {
+                    item.style.display = 'block';
+                } else if (filter === 'enviados' && type.includes('enviada')) {
+                    item.style.display = 'block';
+                } else if (filter === 'respuestas' && type.includes('recibida')) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
 
     // --- GESTIÓN DE MÚLTIPLES EMAILS ---
     const emailInput = document.getElementById('emailInput');
