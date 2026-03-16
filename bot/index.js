@@ -3,7 +3,8 @@ const axios = require('axios');
 
 // Configuración de variables de entorno
 const AGENTMAIL_API_KEY = process.env.AGENTMAIL_API_KEY;
-const AGENTMAIL_INBOX_ID = process.env.AGENTMAIL_INBOX_ID || 'legal-protection1';
+// Usamos el email completo como ID del inbox, que es el estándar de AgentMail v0
+const AGENTMAIL_INBOX_ID = process.env.AGENTMAIL_INBOX_ID || 'legal.protection1@agentmail.to';
 const SENDER_EMAIL = process.env.SENDER_EMAIL || 'legal.protection1@agentmail.to';
 
 /**
@@ -37,13 +38,9 @@ async function runVigilante() {
     const db = admin.firestore();
 
     try {
-        // En una fase posterior, aquí leeremos la colección 'brokers' de Firestore
-        // const snapshot = await db.collection('brokers').where('active', '==', true).get();
-        
-        // Simulación de brokers para el MVP (como solicitado)
+        // Simulación de brokers para el MVP
         const brokers = [
             { name: "Acxiom Corporation", optOutEmail: "privacy@acxiom.com" },
-            // Podrías añadir más aquí
         ];
 
         for (const broker of brokers) {
@@ -66,17 +63,15 @@ async function runVigilante() {
 }
 
 /**
- * Envía la solicitud de eliminación vía AgentMail API
+ * Envía la solicitud de eliminación vía AgentMail API v0
  */
 async function sendRemovalRequest(broker) {
     if (!AGENTMAIL_API_KEY) {
         throw new Error('AGENTMAIL_API_KEY no configurada');
     }
 
-    // Según documentación estándar de AgentMail v1 para enviar mensajes
     const messageData = {
-        inboxId: AGENTMAIL_INBOX_ID,
-        to: broker.optOutEmail, // Algunos endpoints esperan string, otros array. Probamos con string.
+        toAddress: broker.optOutEmail, // v0 suele usar toAddress o to
         subject: `REQUERIMIENTO LEGAL (GDPR): Derecho al Olvido - ${broker.name}`,
         body: `
 Estimado equipo de Privacidad de ${broker.name},
@@ -89,14 +84,17 @@ Identidad de Protección: ${SENDER_EMAIL}
         `.trim()
     };
 
-    console.log(`📤 Intentando enviar a a través de AgentMail inbox: ${AGENTMAIL_INBOX_ID}`);
+    // AgentMail v0 espera el ID en la URL: /v0/inboxes/{email}/messages
+    const url = `https://api.agentmail.to/v0/inboxes/${encodeURIComponent(AGENTMAIL_INBOX_ID)}/messages`;
+    
+    console.log(`📤 Intentando enviar a través de AgentMail URL: ${url}`);
 
-    return await axios.post('https://api.agentmail.to/v1/messages', messageData, {
+    return await axios.post(url, messageData, {
         headers: {
             'Authorization': `Bearer ${AGENTMAIL_API_KEY}`,
             'Content-Type': 'application/json'
         },
-        timeout: 10000
+        timeout: 15000
     });
 }
 
