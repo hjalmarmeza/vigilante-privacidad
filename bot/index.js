@@ -67,7 +67,7 @@ async function runVigilante() {
 
 async function sendRemovalRequest(broker) {
     const messageData = {
-        to: broker.optOutEmail,
+        to: broker.email || broker.optOutEmail,
         subject: `Solicitud de Eliminación de Datos - ${broker.name}`,
         text: `Solicito la eliminación de mis datos personales de sus sistemas bajo el amparo de las leyes de privacidad vigentes. Email de contacto: ${SENDER_EMAIL}`
     };
