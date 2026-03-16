@@ -1,0 +1,17 @@
+{
+  "name": "Vigilante de Privacidad",
+  "short_name": "Vigilante",
+  "description": "Protección de datos y soberanía digital.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#070b14",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
