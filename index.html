@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigilante de Privacidad | Soberanía Digital</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="dark-mode">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+                <span class="logo-text">Vigilante</span>
+            </div>
+            
+            <nav class="side-nav">
+                <a href="#" class="nav-item active"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-search"></i><span>Escaneos</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-user-shield"></i><span>Privacidad</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-history"></i><span>Historial</span></a>
+                <a href="#" class="nav-item"><i class="fas fa-gears"></i><span>Configuración</span></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-card">
+                    <div class="pulse"></div>
+                    <span class="status-msg">Auto-Removal Activo</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar broker o sitio...">
+                </div>
+                <div class="user-profile">
+                    <span class="user-info">
+                        <strong>Hjalmar Meza</strong>
+                        <small>Plan Enterprise Free</small>
+                    </span>
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <!-- Circular Score -->
+                <div class="glass-card score-card">
+                    <h3>Salud de tu Privacidad</h3>
+                    <div class="circle-chart">
+                        <svg viewBox="0 0 36 36" class="circular-chart green">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" stroke-dasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="percentage">68%</div>
+                    </div>
+                    <p class="score-msg">Has recuperado el control en <strong>42 plataformas</strong></p>
+                    <button class="btn-primary">Ver Sugerencias</button>
+                </div>
+
+                <!-- Stats Counters -->
+                <div class="stats-row">
+                    <div class="glass-card mini-stats">
+                        <div class="mini-icon cyan"><i class="fas fa-database"></i></div>
+                        <div class="mini-info">
+                            <span class="mini-label">Brokers Identificados</span>
+                            <span class="mini-value">247</span>
+                        </div>
+                    </div>
+                    <div class="glass-card mini-stats">
+                        <div class="mini-icon amber"><i class="fas fa-paper-plane"></i></div>
+                        <div class="mini-info">
+                            <span class="mini-label">Solicitudes de Borrado</span>
+                            <span class="mini-value">184</span>
+                        </div>
+                    </div>
+                    <div class="glass-card mini-stats">
+                        <div class="mini-icon green"><i class="fas fa-trash-can"></i></div>
+                        <div class="mini-info">
+                            <span class="mini-label">Registros Eliminados</span>
+                            <span class="mini-value">112</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Broker Table -->
+                <div class="glass-card table-section">
+                    <div class="table-header">
+                        <h3>Brokers de Alta Prioridad</h3>
+                        <a href="#" class="view-all">Ver todos</a>
+                    </div>
+                    <table class="broker-table">
+                        <thead>
+                            <tr>
+                                <th>Broker</th>
+                                <th>Riesgo</th>
+                                <th>Fecha Solicitud</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="broker-name">
+                                        <div class="initial b1">A</div>
+                                        <span>Acxiom Corporation</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge high">Extremadamente Alto</span></td>
+                                <td>14 Mar 2026</td>
+                                <td><span class="status-running"><i class="fas fa-spinner fa-spin"></i> En proceso</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="broker-name">
+                                        <div class="initial b2">W</div>
+                                        <span>Whitepages Inc.</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge high">Alto</span></td>
+                                <td>10 Mar 2026</td>
+                                <td><span class="status-done"><i class="fas fa-circle-check"></i> Archivado</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="broker-name">
+                                        <div class="initial b3">S</div>
+                                        <span>Spokeo Deep Search</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge medium">Medio</span></td>
+                                <td>15 Mar 2026</td>
+                                <td><span class="status-pending">Pendiente</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-paper-plane"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- World Alert (Visual Filler) -->
+                <div class="glass-card map-card">
+                    <div class="map-header">
+                        <h3>Nivel de Exposición Global</h3>
+                        <p>Último escaneo hace 14 minutos</p>
+                    </div>
+                    <div class="scan-animation">
+                        <div class="radar"></div>
+                        <div class="scan-lines"></div>
+                        <div class="alert-dots">
+                            <div class="dot d1"></div>
+                            <div class="dot d2"></div>
+                            <div class="dot d3"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
