@@ -1,17 +1,16 @@
 {
-  "name": "Vigilante de Privacidad",
+  "name": "Vigilante Privacy Shield",
   "short_name": "Vigilante",
-  "description": "Protección de datos y soberanía digital.",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#070b14",
-  "theme_color": "#f59e0b",
+  "background_color": "#000000",
+  "theme_color": "#ff9f0a",
   "icons": [
     {
       "src": "icon.png",
       "sizes": "1024x1024",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
