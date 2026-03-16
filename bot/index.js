@@ -73,9 +73,10 @@ async function sendRemovalRequest(broker) {
         throw new Error('AGENTMAIL_API_KEY no configurada');
     }
 
+    // Según documentación estándar de AgentMail v1 para enviar mensajes
     const messageData = {
         inboxId: AGENTMAIL_INBOX_ID,
-        to: [broker.optOutEmail],
+        to: broker.optOutEmail, // Algunos endpoints esperan string, otros array. Probamos con string.
         subject: `REQUERIMIENTO LEGAL (GDPR): Derecho al Olvido - ${broker.name}`,
         body: `
 Estimado equipo de Privacidad de ${broker.name},
@@ -88,12 +89,14 @@ Identidad de Protección: ${SENDER_EMAIL}
         `.trim()
     };
 
+    console.log(`📤 Intentando enviar a a través de AgentMail inbox: ${AGENTMAIL_INBOX_ID}`);
+
     return await axios.post('https://api.agentmail.to/v1/messages', messageData, {
         headers: {
             'Authorization': `Bearer ${AGENTMAIL_API_KEY}`,
             'Content-Type': 'application/json'
         },
-        timeout: 10000 // 10 segundos de timeout
+        timeout: 10000
     });
 }
 
