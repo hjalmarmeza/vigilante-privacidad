@@ -2,149 +2,231 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vigilante - Privacidad Blindada</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigilante de Privacidad | Soberanía Digital</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="dark-mode">
     <div class="app-container">
-        <!-- Sidebar Desktop -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
-            <div class="logo"><i class="fas fa-user-shield"></i> <span>VIGILANTE</span></div>
-            <nav>
-                <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
-                <a href="#" class="nav-item" data-view="escaneos"><i class="fas fa-search"></i> Escaneos</a>
-                <a href="#" class="nav-item" data-view="privacidad"><i class="fas fa-shield-alt"></i> Privacidad</a>
-                <a href="#" class="nav-item" data-view="historial"><i class="fas fa-history"></i> Historial</a>
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+                <span class="logo-text">Vigilante</span>
+            </div>
+            
+            <nav class="side-nav" id="mainNav">
+                <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item" data-view="escaneos"><i class="fas fa-search"></i><span>Escaneos</span></a>
+                <a href="#" class="nav-item" data-view="privacidad"><i class="fas fa-user-shield"></i><span>Privacidad</span></a>
+                <a href="#" class="nav-item" data-view="historial"><i class="fas fa-history"></i><span>Historial</span></a>
+                <a href="#" class="nav-item" data-view="configuracion"><i class="fas fa-gears"></i><span>Configuración</span></a>
             </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-card">
+                    <div class="pulse"></div>
+                    <span class="status-msg">Auto-Removal Activo</span>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-bar">
-                <div class="user-profile">
-                    <div class="avatar"><i class="fas fa-user-shield" style="color:var(--accent)"></i></div>
-                    <div class="user-info">
-                        <strong>Hjalmar Meza</strong>
-                        <small>Protección Nivel Enterprise</small>
-                    </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar broker o sitio...">
                 </div>
-                <!-- Botón Ajustes Móvil -->
-                <button class="btn-icon" id="openConfigMobile" style="display:none;"><i class="fas fa-sliders-h"></i></button>
+                <div class="user-profile">
+                    <span class="user-info">
+                        <strong>Hjalmar Meza</strong>
+                        <small>Plan Enterprise Free</small>
+                    </span>
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                </div>
             </header>
 
-            <!-- SECCIÓN DASHBOARD -->
-            <section id="dashboard-view" class="view-section active">
-                <div class="dashboard-grid">
-                    <div class="glass-card score-card">
-                        <h3>Salud de Privacidad</h3>
-                        <div class="circle-chart">
-                            <svg viewBox="0 0 36 36" class="circular-chart">
-                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="circle" id="healthCircle" stroke-dasharray="20, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div class="percentage" id="healthPct">20%</div>
-                        </div>
-                        <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">Blindaje incompleto detectado.</p>
-                        <button class="btn-primary" onclick="document.getElementById('configModal').classList.add('active')">Mejorar Blindaje</button>
+            <section class="dashboard-grid">
+                <!-- Circular Score -->
+                <div class="glass-card score-card">
+                    <h3>Salud de tu Privacidad</h3>
+                    <div class="circle-chart">
+                        <svg viewBox="0 0 36 36" class="circular-chart green">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="percentage">0%</div>
                     </div>
+                    <p class="score-msg">Tu perfil está incompleto. Configura tus datos para iniciar el escaneo.</p>
+                    <button class="btn-primary" id="openConfig">Completar Perfil</button>
+                </div>
 
-                    <div class="stats-row">
-                        <div class="glass-card mini-stats">
-                            <div class="mini-icon cyan"><i class="fas fa-database"></i></div>
-                            <div><span class="mini-value" id="statsTotal">...</span><span class="mini-label">Brokers</span></div>
+                <!-- Stats Counters -->
+                <div class="stats-row">
+                    <div class="glass-card mini-stats">
+                        <div class="mini-icon cyan"><i class="fas fa-database"></i></div>
+                        <div class="mini-info">
+                            <span class="mini-label">Brokers Identificados</span>
+                            <span class="mini-value">247</span>
                         </div>
-                        <div class="glass-card mini-stats">
-                            <div class="mini-icon amber"><i class="fas fa-paper-plane"></i></div>
-                            <div><span class="mini-value" id="statsSent">...</span><span class="mini-label">Enviados</span></div>
+                    </div>
+                    <div class="glass-card mini-stats">
+                        <div class="mini-icon amber"><i class="fas fa-paper-plane"></i></div>
+                        <div class="mini-info">
+                            <span class="mini-label">Solicitudes de Borrado</span>
+                            <span class="mini-value">184</span>
                         </div>
-                        <div class="glass-card mini-stats">
-                            <div class="mini-icon green"><i class="fas fa-shield-check"></i></div>
-                            <div><span class="mini-value" id="statsDeleted">...</span><span class="mini-label">Eliminados</span></div>
+                    </div>
+                    <div class="glass-card mini-stats">
+                        <div class="mini-icon green"><i class="fas fa-trash-can"></i></div>
+                        <div class="mini-info">
+                            <span class="mini-label">Registros Eliminados</span>
+                            <span class="mini-value">112</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="glass-card" style="margin-top:20px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 style="font-weight:800;">Monitor de Actividad</h3>
-                        <i class="fas fa-broadcast-tower" style="color:var(--accent)"></i>
+                <!-- Broker Table -->
+                <div class="glass-card table-section">
+                    <div class="table-header">
+                        <h3>Brokers de Alta Prioridad</h3>
+                        <a href="#" class="view-all">Ver todos</a>
                     </div>
-                    <div class="broker-table-wrapper">
-                        <table class="broker-table">
-                            <thead>
-                                <tr><th>Data Broker</th><th>Riesgo</th><th>Estado</th><th>Acción</th></tr>
-                            </thead>
-                            <tbody id="brokerTbody">
-                                <tr><td colspan="4" style="text-align:center; padding:40px; color:var(--text-muted);">Sincronizando con Vigilante OS...</td></tr>
-                            </tbody>
-                        </table>
+                    <table class="broker-table">
+                        <thead>
+                            <tr>
+                                <th>Broker</th>
+                                <th>Riesgo</th>
+                                <th>Fecha Solicitud</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="broker-name">
+                                        <div class="initial b1">A</div>
+                                        <span>Acxiom Corporation</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge high">Extremadamente Alto</span></td>
+                                <td>14 Mar 2026</td>
+                                <td><span class="status-running"><i class="fas fa-spinner fa-spin"></i> En proceso</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="broker-name">
+                                        <div class="initial b2">W</div>
+                                        <span>Whitepages Inc.</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge high">Alto</span></td>
+                                <td>10 Mar 2026</td>
+                                <td><span class="status-done"><i class="fas fa-circle-check"></i> Archivado</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-eye"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="broker-name">
+                                        <div class="initial b3">S</div>
+                                        <span>Spokeo Deep Search</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge medium">Medio</span></td>
+                                <td>15 Mar 2026</td>
+                                <td><span class="status-pending">Pendiente</span></td>
+                                <td><button class="btn-icon"><i class="fas fa-paper-plane"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- World Alert (Visual Filler) -->
+                <div class="glass-card map-card">
+                    <div class="map-header">
+                        <h3>Nivel de Exposición Global</h3>
+                        <p>Último escaneo hace 14 minutos</p>
+                    </div>
+                    <div class="scan-animation">
+                        <div class="radar"></div>
+                        <div class="scan-lines"></div>
+                        <div class="alert-dots">
+                            <div class="dot d1"></div>
+                            <div class="dot d2"></div>
+                            <div class="dot d3"></div>
+                        </div>
                     </div>
                 </div>
             </section>
-
-            <!-- OTRAS SECCIONES -->
-            <section id="escaneos-view" class="view-section"><div class="glass-card"><h2><i class="fas fa-search"></i> Escaneo Global</h2><p style="margin-top:15px;color:var(--text-muted)">Monitorizando brechas en tiempo real.</p></div></section>
-            <section id="privacidad-view" class="view-section"><div class="glass-card"><h2><i class="fas fa-shield-alt"></i> Privacidad Shield</h2><p style="margin-top:15px;color:var(--text-muted)">Administra tus derechos ARCO.</p></div></section>
-            <section id="historial-view" class="view-section"><div class="glass-card"><h2><i class="fas fa-history"></i> Historial</h2><p style="margin-top:15px;color:var(--text-muted)">Registro legal de solicitudes.</p></div></section>
         </main>
-
-        <!-- Navegación Móvil -->
-        <nav class="mobile-nav">
-            <a href="#" class="nav-item-mobile active" data-view="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
-            <a href="#" class="nav-item-mobile" data-view="escaneos"><i class="fas fa-search"></i><span>Scan</span></a>
-            <a href="#" class="nav-item-mobile" data-view="privacidad"><i class="fas fa-user-shield"></i><span>Privacy</span></a>
-            <a href="#" class="nav-item-mobile" data-view="historial"><i class="fas fa-history"></i><span>History</span></a>
-            <a href="#" class="nav-item-mobile" data-view="ajustes"><i class="fas fa-sliders-h"></i><span>Menu</span></a>
-        </nav>
-
-        <!-- Modal Configuración Premium (Pull-up Sheet) -->
-        <div id="configModal" class="modal">
-            <div class="modal-content">
-                <button class="close-modal"></button>
-                <h2 style="margin-bottom:30px; font-weight:900; letter-spacing:-1px;">
-                    <i class="fas fa-shield-virus" style="color:var(--accent);"></i> Perfil de Blindaje
-                </h2>
-                <form id="profileForm" class="config-form">
+    </div>
+    <div id="configModal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-shield"></i> Configuración de Perfil Shield</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p class="modal-desc">Ingresa los datos exactos que los brokers suelen recolectar para que podamos localizarlos.</p>
+            
+            <form id="profileForm" class="config-form">
+                <div class="form-row">
                     <div class="form-group">
-                        <label>Nombre Legal Completo</label>
-                        <input type="text" id="profileName" placeholder="Tu nombre oficial para reclamaciones">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="profileName" placeholder="Ej: Hjalmar Meza Cortez" required>
                     </div>
                     <div class="form-group">
-                        <label>Teléfono Móvil</label>
+                        <label>Teléfono</label>
                         <input type="tel" id="profilePhone" placeholder="+51 900 000 000">
                     </div>
-                    <div class="form-group">
-                        <label>Emails a proteger</label>
-                        <div class="email-input-group">
-                            <input type="email" id="emailInput" placeholder="añade@correo.com">
-                            <button type="button" id="addEmailBtn" style="background:#fff; border:none; border-radius:12px; font-weight:800; padding:0 15px;">Añadir</button>
-                        </div>
-                        <div id="emailList" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mis Emails a Proteger (Añade todos los que uses)</label>
+                    <div class="email-input-group">
+                        <input type="email" id="emailInput" placeholder="añadir@correo.com">
+                        <button type="button" id="addEmailBtn" class="btn-secondary">Añadir</button>
                     </div>
-                    <button type="submit" class="btn-primary" style="margin-top:10px;">Guardar y Sincronizar en Firebase</button>
-                </form>
-            </div>
+                    <div id="emailList" class="email-chips">
+                        <!-- Los emails aparecerán aquí como etiquetas -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección Física (Opcional)</label>
+                    <input type="text" placeholder="Ciudad, País o Dirección">
+                </div>
+                <div class="form-group">
+                    <label>Correo "Escudo" para Envíos</label>
+                    <div class="input-with-hint">
+                        <input type="email" value="legal.protection1@agentmail.to" readonly>
+                        <small>Tu identidad oficial de AgentMail. Todas las respuestas de brokers llegarán aquí.</small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar en Firebase</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { firebaseConfig } from "./firebase-config.js";
 
-        try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            window.firebaseDb = db;
-            window.firestoreTools = { collection, onSnapshot, doc, setDoc };
-            window.dispatchEvent(new Event('firebase-ready'));
-        } catch (e) {
-            console.error("Firebase Error:", e);
-        }
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Exportar a window para que script.js pueda usarlo
+        window.firebaseDb = db;
+        window.firestoreTools = { collection, onSnapshot, query, where, doc, setDoc };
     </script>
     <script src="script.js"></script>
 </body>

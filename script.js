@@ -1,143 +1,176 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('--- VIGILANTE OS: SYSTEM START ---');
+    console.log('Vigilante de Privacidad Dashboard Iniciado');
 
-    // 1. SELECTORES
-    const navButtons = document.querySelectorAll('.nav-item, .nav-item-mobile');
-    const sections = document.querySelectorAll('.view-section');
-    const modal = document.getElementById('configModal');
+    const db = window.firebaseDb;
+    const { collection, onSnapshot, query, setDoc, doc } = window.firestoreTools;
 
-    // 2. MOTOR DE NAVEGACIÓN
-    function navigate(viewId) {
-        if (viewId === 'ajustes' || viewId === 'configuracion') {
-            modal.classList.add('active');
-            return;
-        }
-
-        navButtons.forEach(btn => {
-            btn.classList.toggle('active', btn.getAttribute('data-view') === viewId);
-        });
-
-        sections.forEach(sec => {
-            sec.classList.toggle('active', sec.id === `${viewId}-view`);
-        });
-
-        if (modal) modal.classList.remove('active');
-    }
-
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    // --- NAVEGACIÓN LATERAL ---
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
             e.preventDefault();
-            navigate(btn.getAttribute('data-view'));
+            const view = item.getAttribute('data-view');
+            
+            // Actualizar clase activa
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+
+            console.log(`Cambiando a vista: ${view}`);
+            // Aquí podríamos ocultar/mostrar secciones si tuvieramos IDs de contenedores
+            if (view === 'configuracion') {
+                document.getElementById('openConfig').click();
+            }
         });
     });
 
-    // 3. CONTROL MODAL
-    const closeModalBtn = document.querySelector('.close-modal');
-    if (closeModalBtn) closeModalBtn.onclick = () => modal.classList.remove('active');
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    // --- CONEXIÓN REAL CON FIRESTORE (STATS Y TABLA) ---
+    if (db) {
+        onSnapshot(collection(db, "brokers"), (snapshot) => {
+            const total = snapshot.size;
+            const solicitados = snapshot.docs.filter(d => d.data().status === 'enviado' || d.data().status === 'en_proceso').length;
+            const eliminados = snapshot.docs.filter(d => d.data().status === 'eliminado').length;
 
-    // 4. FIREBASE CONNECT (LISTENER REAL)
-    function initFirebaseListener() {
-        const db = window.firebaseDb;
-        const tools = window.firestoreTools;
+            if (total > 0) {
+                document.querySelector('.mini-stats:nth-child(1) .mini-value').textContent = total;
+                document.querySelector('.mini-stats:nth-child(2) .mini-value').textContent = solicitados;
+                document.querySelector('.mini-stats:nth-child(3) .mini-value').textContent = eliminados;
+                
+                // --- RENDERIZADO DINÁMICO DE LA TABLA ---
+                const tbody = document.querySelector('.broker-table tbody');
+                tbody.innerHTML = ''; // Limpiar placeholders
 
-        if (!db || !tools) {
-            setTimeout(initFirebaseListener, 500);
-            return;
+                snapshot.docs.slice(0, 5).forEach(doc => {
+                    const data = doc.data();
+                    const tr = document.createElement('tr');
+                    
+                    const statusClass = data.status === 'en_proceso' ? 'status-running' : 
+                                      data.status === 'eliminado' ? 'status-done' : 'status-pending';
+                    const statusIcon = data.status === 'en_proceso' ? '<i class="fas fa-spinner fa-spin"></i>' : 
+                                     data.status === 'eliminado' ? '<i class="fas fa-circle-check"></i>' : '';
+                    const actionIcon = data.status === 'pendiente' ? 'fa-paper-plane' : 'fa-eye';
+
+                    tr.innerHTML = `
+                        <td>
+                            <div class="broker-name">
+                                <div class="initial" style="background: var(--primary-gradient);">${data.name.charAt(0)}</div>
+                                <span>${data.name}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge ${data.risk === 'Medio' ? 'medium' : 'high'}">${data.risk}</span></td>
+                        <td>${new Date(data.createdAt || Date.now()).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td><span class="${statusClass}">${statusIcon} ${data.status.replace('_', ' ').toUpperCase()}</span></td>
+                        <td><button class="btn-icon"><i class="fas ${actionIcon}"></i></button></td>
+                    `;
+                    
+                    // Re-vincular eventos a los nuevos botones
+                    const btn = tr.querySelector('.btn-icon');
+                    btn.addEventListener('click', () => handleAction(data.name, actionIcon === 'fa-paper-plane'));
+                    
+                    tbody.appendChild(tr);
+                });
+            }
+        });
+    }
+
+    function handleAction(name, isSend) {
+        if (isSend) {
+            alert(`Solicitud enviada a ${name}. Procesando...`);
+        } else {
+            alert(`Detalles de ${name}: Verificado bajo estándar GDPR.`);
         }
-
-        tools.onSnapshot(tools.collection(db, "brokers"), (snap) => {
-            const brokers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            updateDashboard(brokers);
-        });
     }
 
-    function updateDashboard(brokers) {
-        const tbody = document.getElementById('brokerTbody');
-        const hCircle = document.getElementById('healthCircle');
-        const hPct = document.getElementById('healthPct');
-        
-        const total = brokers.length;
-        const sent = brokers.filter(b => ['enviado', 'en_proceso'].includes((b.status || '').toLowerCase())).length;
-        const deleted = brokers.filter(b => (b.status || '').toLowerCase() === 'eliminado').length;
-        const score = total > 0 ? Math.round((deleted / total) * 100) : 0;
-
-        document.getElementById('statsTotal').textContent = total;
-        document.getElementById('statsSent').textContent = sent;
-        document.getElementById('statsDeleted').textContent = deleted;
-        if (hPct) hPct.textContent = `${score}%`;
-        if (hCircle) hCircle.style.strokeDasharray = `${score}, 100`;
-
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        brokers.forEach(b => {
-            const status = (b.status || 'pendiente').toLowerCase();
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${b.name}</strong></td>
-                <td><span class="badge high">${b.risk || 'Alto'}</span></td>
-                <td><span class="status-${status}">${status.toUpperCase()}</span></td>
-                <td><button class="btn-icon" onclick="window.requestAction('${b.id}')"><i class="fas fa-paper-plane"></i></button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    // 5. PERFIL Y CHIPS
-    const profileForm = document.getElementById('profileForm');
+    // --- GESTIÓN DE MÚLTIPLES EMAILS ---
     const emailInput = document.getElementById('emailInput');
     const addEmailBtn = document.getElementById('addEmailBtn');
-    const emailList = document.getElementById('emailList');
-    let userEmails = [];
+    const emailListContainer = document.getElementById('emailList');
+    let protectedEmails = [];
 
-    if (addEmailBtn) {
-        addEmailBtn.onclick = () => {
-            const val = emailInput.value.trim();
-            if (val && val.includes('@') && !userEmails.includes(val)) {
-                userEmails.push(val);
-                renderChips();
-                emailInput.value = '';
-            }
-        };
-    }
-
-    function renderChips() {
-        emailList.innerHTML = '';
-        userEmails.forEach((em, i) => {
+    function renderEmails() {
+        emailListContainer.innerHTML = '';
+        protectedEmails.forEach((email, index) => {
             const chip = document.createElement('div');
-            chip.style = 'background:rgba(255,159,10,0.1); color:var(--accent); padding:8px 12px; border-radius:10px; font-size:13px; font-weight:600; display:flex; gap:8px; align-items:center;';
-            chip.innerHTML = `${em} <i class="fas fa-times" style="cursor:pointer" onclick="window.delEmail(${i})"></i>`;
-            emailList.appendChild(chip);
+            chip.className = 'chip';
+            chip.innerHTML = `${email} <button type="button" data-index="${index}">&times;</button>`;
+            emailListContainer.appendChild(chip);
         });
     }
 
-    window.delEmail = (i) => { userEmails.splice(i, 1); renderChips(); };
+    if (addEmailBtn) {
+        addEmailBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim();
+            if (email && !protectedEmails.includes(email)) {
+                protectedEmails.push(email);
+                emailInput.value = '';
+                renderEmails();
+            }
+        });
+    }
 
-    profileForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = profileForm.querySelector('button[type="submit"]');
-        btn.textContent = 'Sincronizando...';
-        
-        try {
-            const db = window.firebaseDb;
-            const tools = window.firestoreTools;
-            const data = {
-                name: document.getElementById('profileName').value,
-                phone: document.getElementById('profilePhone').value,
-                emails: userEmails,
+    emailListContainer.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const index = e.target.getAttribute('data-index');
+            protectedEmails.splice(index, 1);
+            renderEmails();
+        }
+    });
+
+    // --- MANEJO DEL PERFIL (REAL) ---
+    const modal = document.getElementById('configModal');
+    const openBtn = document.getElementById('openConfig');
+    const closeBtn = document.querySelector('.close-modal');
+    const profileForm = document.getElementById('profileForm');
+
+    if (openBtn) openBtn.addEventListener('click', () => modal.classList.add('active'));
+    if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+
+    if (profileForm) {
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = profileForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            if (protectedEmails.length === 0) {
+                alert("Por favor, añade al menos un email para proteger.");
+                return;
+            }
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando en Firebase...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                nombre: document.getElementById('profileName').value,
+                telefono: document.getElementById('profilePhone').value,
+                direccion: profileForm.querySelectorAll('input[type="text"]')[1].value, // El de dirección
+                emails: protectedEmails,
                 updatedAt: new Date().toISOString()
             };
-            await tools.setDoc(tools.doc(db, "users", "main_user"), data, { merge: true });
-            btn.textContent = '✅ Completado';
-            setTimeout(() => { modal.classList.remove('active'); btn.textContent = 'Guardar y Sincronizar en Firebase'; }, 1000);
-        } catch (err) {
-            btn.textContent = 'Error al sincronizar';
-            console.error(err);
-        }
-    };
 
-    window.requestAction = (id) => alert('Solicitud enviada al bot de vigilancia.');
+            try {
+                if (db) {
+                    await setDoc(doc(db, "config", "user_profile"), formData);
+                    console.log('Perfil guardado en Firestore con múltiples emails');
+                }
 
-    window.addEventListener('firebase-ready', initFirebaseListener);
-    initFirebaseListener();
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Guardado Exitoso';
+                submitBtn.style.background = '#10b981';
+
+                setTimeout(() => {
+                    modal.classList.remove('active');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.background = '';
+                    submitBtn.disabled = false;
+                    
+                    document.querySelector('.percentage').textContent = '100%';
+                    document.querySelector('.circle').style.strokeDasharray = '100, 100';
+                    document.querySelector('.score-msg').innerHTML = `Perfil activo para <strong>${formData.nombre}</strong> con ${protectedEmails.length} emails protegidos.`;
+                }, 1500);
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                alert("Error al conectar con Firebase.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    }
 });
