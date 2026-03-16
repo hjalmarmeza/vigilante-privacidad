@@ -4,37 +4,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const db = window.firebaseDb;
     const { collection, onSnapshot, query, setDoc, doc } = window.firestoreTools;
 
-    // --- NAVEGACIÓN LATERAL ---
+    // --- LÓGICA DE NAVEGACIÓN ---
     const navItems = document.querySelectorAll('.nav-item');
     const sections = document.querySelectorAll('.view-section');
+    const logo = document.querySelector('.logo');
+
+    function switchView(viewId) {
+        console.log(`Cambiando a vista: ${viewId}`);
+        
+        // Actualizar Nav Items
+        navItems.forEach(nav => {
+            nav.classList.remove('active');
+            if (nav.getAttribute('data-view') === viewId) {
+                nav.classList.add('active');
+            }
+        });
+
+        // Actualizar Secciones
+        sections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === `${viewId}-view`) {
+                section.classList.add('active');
+            }
+        });
+
+        // Caso especial: Configuración abre el modal pero mantiene vista dashboard
+        if (viewId === 'configuracion') {
+            const modal = document.getElementById('configModal');
+            if (modal) modal.classList.add('active');
+            switchView('dashboard'); // Volver al dashboard de fondo
+        }
+    }
+
+    // Logo vuelve al Dashboard
+    if (logo) {
+        logo.style.cursor = 'pointer';
+        logo.addEventListener('click', () => switchView('dashboard'));
+    }
 
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const view = item.getAttribute('data-view');
-            
-            // Actualizar clase activa en nav
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
-
-            // Cambiar visibilidad de secciones
-            sections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === `${view}-view`) {
-                    section.classList.add('active');
-                }
-            });
-
-            console.log(`Cambiando a vista: ${view}`);
-            
-            // Especial: Si es configuración, abrimos el modal
-            if (view === 'configuracion') {
-                document.getElementById('openConfig').click();
-                // Volver a dashboard visualmente después de abrir modal para no dejar la pantalla vacía
-                item.classList.remove('active');
-                navItems[0].classList.add('active');
-                document.getElementById('dashboard-view').classList.add('active');
-            }
+            switchView(view);
         });
     });
 
@@ -45,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const query = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('.broker-table tbody tr');
             rows.forEach(row => {
-                const name = row.querySelector('.broker-name span')?.textContent.toLowerCase() || "";
-                row.style.display = name.includes(query) ? '' : 'none';
+                const nameText = row.querySelector('.broker-name span')?.textContent.toLowerCase() || "";
+                row.style.display = nameText.includes(query) ? '' : 'none';
             });
         });
     }

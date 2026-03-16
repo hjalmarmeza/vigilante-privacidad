@@ -4,6 +4,8 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --accent: #f59e0b;
     --accent-glow: rgba(245, 158, 11, 0.3);
+    --accent-cyan: #06b6d4;
+    --primary-gradient: linear-gradient(135deg, #f59e0b, #d97706);
     --green: #10b981;
     --cyan: #06b6d4;
     --text-main: #f8fafc;
@@ -51,7 +53,7 @@ body {
 .logo-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--accent), #d97706);
+    background: var(--primary-gradient);
     border-radius: 12px;
     display: flex;
     align-items: center;
