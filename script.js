@@ -1,118 +1,103 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('--- Privacy Bot Client Ready ---');
+    // --- ELEMENTOS ---
+    const navItems = document.querySelectorAll('.nav-item, .nav-item-mobile');
+    const sections = document.querySelectorAll('.view-section');
+    const configModal = document.getElementById('configModal');
+    const btnOpenConfig = document.getElementById('openConfig');
+    const btnCloseModal = document.querySelector('.close-modal');
 
-    // Módulos de UI
-    const UI = {
-        navItems: document.querySelectorAll('.nav-item, .nav-item-mobile'),
-        sections: document.querySelectorAll('.view-section'),
-        modal: document.getElementById('configModal'),
-        openModalBtn: document.getElementById('openConfig'),
-        closeModalBtn: document.querySelector('.close-modal')
-    };
-
-    // Navegación Principal
+    // --- NAVEGACIÓN ---
     function switchView(viewId) {
-        console.log('Switching to view:', viewId);
-
-        // Caso Ajustes/Configuración (Modal)
+        // Ajustes (Modal)
         if (viewId === 'configuracion') {
-            if (UI.modal) UI.modal.classList.add('active');
+            if (configModal) configModal.classList.add('active');
             return;
         }
 
-        // Toggles normales
-        UI.navItems.forEach(item => {
-            const isActive = item.getAttribute('data-view') === viewId;
-            item.classList.toggle('active', isActive);
+        // Navegación normal
+        navItems.forEach(item => {
+            const isMatch = item.getAttribute('data-view') === viewId;
+            item.classList.toggle('active', isMatch);
         });
 
-        UI.sections.forEach(sec => {
-            const isActive = sec.id === `${viewId}-view`;
-            sec.classList.toggle('active', isActive);
+        sections.forEach(section => {
+            const isMatch = section.id === `${viewId}-view`;
+            section.classList.toggle('active', isMatch);
         });
 
-        // Cerrar modal si se navega a otra parte
-        if (UI.modal) UI.modal.classList.remove('active');
+        // Cerrar modal al navegar a otra vista
+        if (configModal) configModal.classList.remove('active');
     }
 
-    // Bindings de Navegación
-    UI.navItems.forEach(item => {
+    navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
-            const view = item.getAttribute('data-view');
-            if (view) switchView(view);
+            const viewId = item.getAttribute('data-view');
+            switchView(viewId);
         });
     });
 
-    // Modales
-    if (UI.openModalBtn) UI.openModalBtn.addEventListener('click', () => UI.modal.classList.add('active'));
-    if (UI.closeModalBtn) UI.closeModalBtn.addEventListener('click', () => UI.modal.classList.remove('active'));
+    // --- MODAL ---
+    if (btnOpenConfig) btnOpenConfig.addEventListener('click', () => configModal.classList.add('active'));
+    if (btnCloseModal) btnCloseModal.addEventListener('click', () => configModal.classList.remove('active'));
     
-    // Cerrar modal al tocar fuera
     window.addEventListener('click', (e) => {
-        if (e.target === UI.modal) UI.modal.classList.remove('active');
+        if (e.target === configModal) configModal.classList.remove('active');
     });
 
-    // --- INTEGRACIÓN FIRESTORE ---
+    // --- DATA (FIRESTORE) ---
     const db = window.firebaseDb;
     const tools = window.firestoreTools;
 
     if (db && tools) {
         const { collection, onSnapshot } = tools;
-        console.log('🔗 Firestore Listener Activo');
-        
         onSnapshot(collection(db, "brokers"), (snapshot) => {
-            const data = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-            updateDashboard(data);
+            const brokers = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+            updateUI(brokers);
         });
     }
 
-    function updateDashboard(brokers) {
-        console.log('Updating UI with', brokers.length, 'brokers');
-        
+    function updateUI(brokers) {
         // Stats
         const total = brokers.length;
         const sent = brokers.filter(b => ['enviado', 'en_proceso'].includes((b.status || '').toLowerCase())).length;
         const deleted = brokers.filter(b => (b.status || '').toLowerCase() === 'eliminado').length;
 
-        setText('.mini-stats:nth-child(1) .mini-value', total);
-        setText('.mini-stats:nth-child(2) .mini-value', sent);
-        setText('.mini-stats:nth-child(3) .mini-value', deleted);
+        const val1 = document.querySelector('.mini-stats:nth-child(1) .mini-value');
+        const val2 = document.querySelector('.mini-stats:nth-child(2) .mini-value');
+        const val3 = document.querySelector('.mini-stats:nth-child(3) .mini-value');
+        
+        if (val1) val1.textContent = total;
+        if (val2) val2.textContent = sent;
+        if (val3) val3.textContent = deleted;
 
-        // Gráfico Circular
+        // Score
         const score = total > 0 ? Math.round((deleted / total) * 100) : 0;
         const circle = document.querySelector('.circle');
-        const percentageText = document.querySelector('.percentage');
-        
+        const pctText = document.querySelector('.percentage');
         if (circle) circle.style.strokeDasharray = `${score}, 100`;
-        if (percentageText) percentageText.textContent = `${score}%`;
+        if (pctText) pctText.textContent = `${score}%`;
 
-        // Tabla
+        // Table
         const tbody = document.querySelector('.broker-table tbody');
         if (tbody) {
-            tbody.innerHTML = brokers.length ? '' : '<tr><td colspan="5">No hay datos disponibles</td></tr>';
-            brokers.slice(0, 10).forEach(broker => {
+            tbody.innerHTML = '';
+            brokers.forEach(b => {
+                const status = (b.status || 'pendiente').toLowerCase();
                 const tr = document.createElement('tr');
-                const status = (broker.status || 'pendiente').toLowerCase();
                 tr.innerHTML = `
-                    <td><strong>${broker.name}</strong></td>
-                    <td><span class="badge ${broker.risk === 'Alto' ? 'high' : 'medium'}">${broker.risk || 'Medio'}</span></td>
+                    <td><strong>${b.name}</strong></td>
+                    <td><span class="badge ${b.risk === 'Alto' ? 'high' : 'medium'}">${b.risk || 'Medio'}</span></td>
                     <td>${new Date().toLocaleDateString()}</td>
                     <td><span class="status-${status}">${status.toUpperCase()}</span></td>
-                    <td><button class="btn-icon" onclick="globalHandle('${broker.name}')"><i class="fas fa-paper-plane"></i></button></td>
+                    <td><button class="btn-icon" onclick="handleAction('${b.name}')"><i class="fas fa-eye"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
     }
-
-    function setText(sel, txt) {
-        const el = document.querySelector(sel);
-        if (el) el.textContent = txt;
-    }
 });
 
-// Función Global para botones dinámicos
-window.globalHandle = (name) => {
-    alert('Acción iniciada para: ' + name);
+window.handleAction = (name) => {
+    console.log('Action for:', name);
 };
