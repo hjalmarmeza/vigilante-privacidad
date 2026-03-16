@@ -17,12 +17,12 @@
                 <span class="logo-text">Vigilante</span>
             </div>
             
-            <nav class="side-nav">
-                <a href="#" class="nav-item active"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-search"></i><span>Escaneos</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-user-shield"></i><span>Privacidad</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-history"></i><span>Historial</span></a>
-                <a href="#" class="nav-item"><i class="fas fa-gears"></i><span>Configuración</span></a>
+            <nav class="side-nav" id="mainNav">
+                <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+                <a href="#" class="nav-item" data-view="escaneos"><i class="fas fa-search"></i><span>Escaneos</span></a>
+                <a href="#" class="nav-item" data-view="privacidad"><i class="fas fa-user-shield"></i><span>Privacidad</span></a>
+                <a href="#" class="nav-item" data-view="historial"><i class="fas fa-history"></i><span>Historial</span></a>
+                <a href="#" class="nav-item" data-view="configuracion"><i class="fas fa-gears"></i><span>Configuración</span></a>
             </nav>
 
             <div class="sidebar-footer">
@@ -174,18 +174,25 @@
             <p class="modal-desc">Ingresa los datos exactos que los brokers suelen recolectar para que podamos localizarlos.</p>
             
             <form id="profileForm" class="config-form">
-                <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input type="text" placeholder="Ej: Hjalmar Meza Cortez" required>
-                </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Email Principal</label>
-                        <input type="email" placeholder="email@ejemplo.com" required>
+                        <label>Nombre Completo</label>
+                        <input type="text" id="profileName" placeholder="Ej: Hjalmar Meza Cortez" required>
                     </div>
                     <div class="form-group">
                         <label>Teléfono</label>
-                        <input type="tel" placeholder="+51 900 000 000">
+                        <input type="tel" id="profilePhone" placeholder="+51 900 000 000">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mis Emails a Proteger (Añade todos los que uses)</label>
+                    <div class="email-input-group">
+                        <input type="email" id="emailInput" placeholder="añadir@correo.com">
+                        <button type="button" id="addEmailBtn" class="btn-secondary">Añadir</button>
+                    </div>
+                    <div id="emailList" class="email-chips">
+                        <!-- Los emails aparecerán aquí como etiquetas -->
                     </div>
                 </div>
                 <div class="form-group">
@@ -207,6 +214,29 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuración obtenida dinámicamente
+        const firebaseConfig = {
+            projectId: "vigilante-privacidad-hm",
+            appId: "1:648731153624:web:b2a981de5ecfcdd9a3b3ad",
+            storageBucket: "vigilante-privacidad-hm.firebasestorage.app",
+            apiKey: "AIzaSyDOhBaPa_rpWdSC_E4TpJWoJ-DnhRMAu0U",
+            authDomain: "vigilante-privacidad-hm.firebaseapp.com",
+            messagingSenderId: "648731153624"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Exportar a window para que script.js pueda usarlo
+        window.firebaseDb = db;
+        window.firestoreTools = { collection, onSnapshot, query, where, doc, setDoc };
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

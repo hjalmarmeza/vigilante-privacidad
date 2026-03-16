@@ -1,7 +1,7 @@
 {
   "firestore": {
-    "database": "(default)",
-    "location": "nam5",
+    "database": "(default) house-cleaning",
+    "location": "us-east1",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
