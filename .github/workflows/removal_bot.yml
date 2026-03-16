@@ -29,5 +29,5 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           AGENTMAIL_API_KEY: ${{ secrets.AGENTMAIL_API_KEY }}
-          AGENTMAIL_INBOX_ID: 'legal-protection1'
+          AGENTMAIL_INBOX_ID: 'legal.protection1@agentmail.to'
           SENDER_EMAIL: 'legal.protection1@agentmail.to'
