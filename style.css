@@ -1,179 +1,204 @@
 /* 
-   VIGILANTE PRIVACIDAD - ULTRA PREMIUM NEUMORPHIC-GLASS EDITION
-   Design: Apple-Inspired Minimalist Dark Mode
+   VIGILANTE PRIVACIDAD - ULTIMATE PREMIUM v4.0
+   Sistema de diseño unificado, responsivo y ultra-premium.
 */
 
 :root {
-    --bg: #000000;
-    --sidebar-bg: #0b0f1a;
-    --card-bg: rgba(28, 28, 30, 0.7);
-    --border: rgba(255, 255, 255, 0.12);
+    --bg-deep: #000000;
+    --bg-card: #1c1c1e;
+    --bg-input: #2c2c2e;
     --accent: #f59e0b;
-    --accent-glow: rgba(245, 158, 11, 0.4);
-    --text: #ffffff;
-    --text-muted: #8e8e93;
-    --green: #34c759;
-    --red: #ff3b30;
-    --input-bg: rgba(44, 44, 46, 0.6);
+    --accent-light: #fbbf24;
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --border: rgba(255, 255, 255, 0.1);
+    --safe-bottom: env(safe-area-inset-bottom);
 }
 
 * {
     margin: 0; padding: 0; box-sizing: border-box;
-    font-family: 'SF Pro Display', 'Outfit', -apple-system, sans-serif;
-    -webkit-tap-highlight-color: transparent;
+    font-family: 'Outfit', -apple-system, sans-serif;
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
-    overflow-x: hidden;
-    min-height: 100vh;
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
 }
 
 /* =============================================
-   LAYOUT CORE
+   LAYOUT ESTRUCTURAL
    ============================================= */
-.app-container { display: flex; min-height: 100vh; }
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: #0b0f1a;
+    border-right: 1px solid var(--border);
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+}
 
 .main-content {
-    flex: 1; margin-left: 260px; padding: 40px; padding-top: 110px;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    flex: 1;
+    margin-left: 260px;
+    padding: 30px;
+    padding-top: 100px;
+    width: calc(100% - 260px);
 }
 
 /* =============================================
-   ULTRA-PREMIUM INPUTS & FORM (ELIMINAR ESTILOS VIEJOS)
-   ============================================= */
-
-.config-form .form-group { margin-bottom: 28px; position: relative; }
-
-.config-form label {
-    display: block; font-size: 13px; font-weight: 600; color: var(--text-muted);
-    margin-bottom: 10px; padding-left: 4px; letter-spacing: -0.2px;
-}
-
-/* INPUTS ESTILO APPLE / TESLA */
-.config-form input {
-    width: 100%; 
-    background: var(--input-bg) !important;
-    border: 1.5px solid var(--border) !important;
-    border-radius: 14px !important; 
-    padding: 18px 20px !important;
-    color: #fff !important; 
-    font-size: 16px !important; 
-    font-weight: 400 !important;
-    outline: none !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-/* EFECTO DE FOCO PREMIUM */
-.config-form input:focus {
-    background: rgba(58, 58, 60, 0.8) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15) !important;
-    transform: translateY(-1px);
-}
-
-.config-form input::placeholder { color: #555 !important; font-weight: 300; }
-
-/* EMAIL GROUP FIX */
-.email-input-group { 
-    display: grid; 
-    grid-template-columns: 1fr 100px; 
-    gap: 12px; 
-}
-
-.btn-add-email {
-    background: #fff; color: #000; border: none;
-    border-radius: 14px; font-weight: 700; font-size: 14px;
-    height: 100%; cursor: pointer; transition: 0.2s;
-}
-.btn-add-email:active { transform: scale(0.95); opacity: 0.8; }
-
-/* =============================================
-   MODAL - NEW ARCHITECTURE (MOBILE FULLSCREEN)
-   ============================================= */
-
-.modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.4); 
-    display: none; align-items: center; justify-content: center;
-    z-index: 9999; backdrop-filter: blur(20px);
-}
-
-.modal.active { display: flex; }
-
-.modal-content {
-    background: #1c1c1e;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 36px;
-    padding: 40px;
-    width: 90%; max-width: 500px;
-    position: relative;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-}
-
-/* HEADER MODAL */
-.modal-header h2 {
-    font-size: 28px; font-weight: 800; letter-spacing: -0.8px;
-    margin-bottom: 30px; display: flex; align-items: center; gap: 15px;
-}
-
-.close-modal {
-    position: absolute; top: 25px; right: 25px;
-    width: 32px; height: 32px; border-radius: 50%;
-    background: rgba(255,255,255,0.08); border: none;
-    color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-
-/* =============================================
-   MOBILE OVERRIDES (PREMIUM FOCUS)
+   DISEÑO MÓVIL (PRIORIDAD)
    ============================================= */
 
 @media (max-width: 850px) {
     .sidebar { display: none; }
-    .main-content { margin-left: 0; padding: 20px; padding-top: 100px; }
+    .main-content { 
+        margin-left: 0; 
+        width: 100%; 
+        padding: 20px; 
+        padding-top: 100px; 
+        padding-bottom: 120px; /* Espacio para el nav inferior */
+    }
 
     .top-bar {
-        position: fixed; top: 0; left: 0; right: 0; height: 85px;
-        background: rgba(0,0,0,0.8); backdrop-filter: saturate(180%) blur(20px);
-        border-bottom: 0.5px solid var(--border); z-index: 2000;
-        display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        position: fixed; top: 0; left: 0; right: 0;
+        height: 80px; background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        display: flex !important; align-items: center; justify-content: space-between;
+        padding: 0 20px; z-index: 2000;
     }
 
-    /* Modal Mobile: Pull-up Sheet */
-    .modal-content {
-        position: fixed; bottom: 0; left: 0; right: 0; width: 100%;
-        max-width: none; border-radius: 32px 32px 0 0;
-        padding: 35px 24px 60px 24px;
-        animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    .mobile-nav {
+        display: flex !important;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        height: calc(85px + var(--safe-bottom));
+        background: rgba(28, 28, 30, 0.95);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border);
+        justify-content: space-around;
+        align-items: flex-start;
+        padding-top: 15px;
+        z-index: 5000;
+        padding-bottom: var(--safe-bottom);
     }
 }
 
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-/* BUTTONS */
-.btn-primary {
-    background: var(--accent); color: #000;
-    border: none; padding: 20px; border-radius: 18px;
-    font-weight: 800; font-size: 17px; width: 100%;
-    box-shadow: 0 12px 24px rgba(245, 158, 11, 0.25);
-    transition: all 0.3s ease; letter-spacing: -0.3px;
+.nav-item-mobile {
+    text-decoration: none; color: var(--text-secondary);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    width: 20%;
 }
+.nav-item-mobile i { font-size: 22px; }
+.nav-item-mobile span { font-size: 10px; font-weight: 600; }
+.nav-item-mobile.active { color: var(--accent); }
 
-.btn-primary:active { transform: scale(0.97); }
+/* =============================================
+   COMPONENTES PREMIUM (DASHBOARD)
+   ============================================= */
 
-/* DASHBOARD COMPONENTS */
 .glass-card {
-    background: var(--card-bg); border-radius: 28px;
-    border: 1px solid var(--border); padding: 24px;
+    background: var(--bg-card);
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    padding: 24px;
     margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.circle-chart { width: 180px; height: 180px; margin: 0 auto; position: relative; }
-.percentage { font-size: 42px; font-weight: 900; }
+/* Círculo de Salud con Colores Reales */
+.circle-chart {
+    width: 180px; height: 180px; margin: 0 auto 20px auto; position: relative;
+}
+.circular-chart { display: block; width: 100%; height: 100%; }
+.circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 2.8; }
+.circle { 
+    fill: none; stroke: var(--accent); stroke-width: 2.8; 
+    stroke-linecap: round; transition: stroke-dasharray 0.5s ease;
+}
+.percentage {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 42px; font-weight: 900; color: #fff;
+}
 
+/* =============================================
+   MODAL PREMIUM (HARDENED)
+   ============================================= */
+
+.modal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.6); display: none;
+    z-index: 9999; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    align-items: center; justify-content: center;
+}
+.modal.active { display: flex !important; }
+
+.modal-content {
+    background: #1c1c1e;
+    width: 90%; max-width: 500px;
+    border-radius: 36px; padding: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+/* Inputs Estilo Apple / Tesla */
+.config-form .form-group { margin-bottom: 25px; }
+.config-form label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 600; }
+
+.config-form input {
+    width: 100%; 
+    background: var(--bg-input); 
+    border: 1.5px solid var(--border);
+    border-radius: 16px; 
+    padding: 16px 20px;
+    color: #fff; 
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.config-form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+}
+
+.btn-primary {
+    background: var(--accent); color: #000; border: none;
+    padding: 18px; border-radius: 18px; font-weight: 800;
+    width: 100%; font-size: 16px; cursor: pointer;
+    box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2);
+}
+
+.close-modal {
+    position: absolute; top: 25px; right: 25px;
+    background: rgba(255,255,255,0.08); border: none;
+    color: #fff; width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+/* TABLAS */
+.broker-table-wrapper { overflow-x: auto; width: 100%; border-radius: 16px; margin-top: 15px; }
+.broker-table { width: 100%; min-width: 600px; border-collapse: collapse; }
+.broker-table th { text-align: left; padding: 12px; font-size: 11px; text-transform: uppercase; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.broker-table td { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; }
+
+/* VISIBILIDAD DE SECCIONES */
 .view-section { display: none; }
-.view-section.active { display: block; animation: fadeIn 0.4s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.view-section.active { display: block !important; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.user-profile { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: #2c2c2e; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--accent); }
+.user-info strong { display: block; font-size: 16px; font-weight: 800; }
+.user-info small { color: var(--accent); font-size: 10px; font-weight: 700; text-transform: uppercase; }
