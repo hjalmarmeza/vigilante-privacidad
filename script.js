@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Control Modal
+    const openConfigBtn = document.getElementById('openConfig');
+    if (openConfigBtn) openConfigBtn.onclick = () => modal.classList.add('active');
+
     const closeModalBtn = document.querySelector('.close-modal');
     if (closeModalBtn) closeModalBtn.onclick = () => modal.classList.remove('active');
     if (modal) {
