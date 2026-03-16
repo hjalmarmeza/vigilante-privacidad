@@ -569,6 +569,95 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-w: 0px;
+    }
+
+    .sidebar {
+        display: none; /* Ocultar sidebar en móvil */
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+        padding-bottom: 90px; /* Espacio para el nav inferior */
+    }
+
+    .top-bar {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+        grid-column: span 1;
+    }
+
+    .table-section {
+        grid-column: span 1;
+        overflow-x: auto;
+    }
+
+    .broker-table {
+        min-width: 500px;
+    }
+
+    .score-card {
+        grid-row: auto;
+    }
+
+    /* BARRA DE NAVEGACIÓN INFERIOR (MÓVIL) */
+    .mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        padding: 12px;
+        justify-content: space-around;
+        z-index: 1000;
+        animation: slideUp 0.3s ease;
+    }
+
+    .nav-item-mobile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 10px;
+    }
+
+    .nav-item-mobile i {
+        font-size: 20px;
+    }
+
+    .nav-item-mobile.active {
+        color: var(--accent);
+    }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
 /* Section Display Classes */
 .view-section {
     display: none;

@@ -6,14 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LÓGICA DE NAVEGACIÓN ---
     const navItems = document.querySelectorAll('.nav-item');
+    const mobileNavItems = document.querySelectorAll('.nav-item-mobile');
     const sections = document.querySelectorAll('.view-section');
     const logo = document.querySelector('.logo');
 
     function switchView(viewId) {
         console.log(`Cambiando a vista: ${viewId}`);
         
-        // Actualizar Nav Items
-        navItems.forEach(nav => {
+        // Actualizar Nav Items (Ambos: Sidebar y Móvil)
+        [...navItems, ...mobileNavItems].forEach(nav => {
             nav.classList.remove('active');
             if (nav.getAttribute('data-view') === viewId) {
                 nav.classList.add('active');
@@ -43,6 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const view = item.getAttribute('data-view');
+            switchView(view);
+        });
+    });
+
+    mobileNavItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             const view = item.getAttribute('data-view');
