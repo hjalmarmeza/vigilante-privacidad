@@ -218,16 +218,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // Configuración obtenida dinámicamente
-        const firebaseConfig = {
-            projectId: "vigilante-privacidad-hm",
-            appId: "1:648731153624:web:b2a981de5ecfcdd9a3b3ad",
-            storageBucket: "vigilante-privacidad-hm.firebasestorage.app",
-            apiKey: "AIzaSyDOhBaPa_rpWdSC_E4TpJWoJ-DnhRMAu0U",
-            authDomain: "vigilante-privacidad-hm.firebaseapp.com",
-            messagingSenderId: "648731153624"
-        };
+        import { firebaseConfig } from "./firebase-config.js";
 
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
