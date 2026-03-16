@@ -1,115 +1,122 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. CORE NAVIGATION ---
-    const navItems = document.querySelectorAll('.nav-item, .nav-item-mobile');
-    const sections = document.querySelectorAll('.view-section');
-    const configModal = document.getElementById('configModal');
+    console.log('--- VIGILANTE OS: SYSTEM START ---');
 
-    function switchView(viewId) {
+    // 1. SELECTORES DE NAVEGACIÓN
+    const navButtons = document.querySelectorAll('.nav-item, .nav-item-mobile');
+    const sections = document.querySelectorAll('.view-section');
+    const modal = document.getElementById('configModal');
+
+    // 2. MOTOR DE NAVEGACIÓN (DEFINITIVO)
+    function navigate(viewId) {
+        console.log('Navegando a:', viewId);
+
+        // Caso Ajustes (Abrir Modal)
         if (viewId === 'configuracion' || viewId === 'ajustes') {
-            configModal.classList.add('active');
+            if (modal) modal.classList.add('active');
             return;
         }
 
-        navItems.forEach(item => {
-            const vid = item.getAttribute('data-view');
-            item.classList.toggle('active', vid === viewId);
+        // Toggles de Botones y Secciones
+        navButtons.forEach(btn => {
+            const btnView = btn.getAttribute('data-view');
+            btn.classList.toggle('active', btnView === viewId);
         });
 
         sections.forEach(sec => {
-            const isMatch = sec.id === `${viewId}-view`;
-            sec.classList.toggle('active', isMatch);
+            // Buscamos la sección por ID (asegurando que coincida con el data-view)
+            const sectionTarget = `${viewId}-view`;
+            if (sec.id === sectionTarget) {
+                sec.classList.add('active');
+                sec.style.display = 'block'; // Fuerza visibilidad
+            } else {
+                sec.classList.remove('active');
+                sec.style.display = 'none'; // Fuerza ocultamiento
+            }
         });
 
-        configModal.classList.remove('active');
+        // Cerrar modal si se navega a otra sección
+        if (modal) modal.classList.remove('active');
     }
 
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
+    // Vincular Eventos de Navegación
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
             e.preventDefault();
-            const view = item.getAttribute('data-view');
-            switchView(view);
+            const target = btn.getAttribute('data-view');
+            navigate(target);
         });
     });
 
-    // --- 2. MODAL CONTROLS ---
+    // 3. CONTROL DE MODAL
     const openConfigBtn = document.getElementById('openConfig');
     const closeModalBtn = document.querySelector('.close-modal');
 
-    if (openConfigBtn) openConfigBtn.onclick = () => configModal.classList.add('active');
-    if (closeModalBtn) closeModalBtn.onclick = () => configModal.classList.remove('active');
-    
-    window.onclick = (e) => {
-        if (e.target === configModal) configModal.classList.remove('active');
-    };
+    if (openConfigBtn) openConfigBtn.onclick = () => modal.classList.add('active');
+    if (closeModalBtn) closeModalBtn.onclick = () => modal.classList.remove('active');
+    window.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
 
-    // --- 3. AÑADIR EMAIL (REPARADO Y AUDITADO) ---
+    // 4. FUNCIONALIDAD: AÑADIR EMAILS (PERFIL)
     const addEmailBtn = document.getElementById('addEmailBtn');
     const emailInput = document.getElementById('emailInput');
     const emailList = document.getElementById('emailList');
-    let userEmails = [];
+    let emailsArray = [];
 
     if (addEmailBtn) {
         addEmailBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            const email = emailInput.value.trim();
-            if (email && email.includes('@')) {
-                if (!userEmails.includes(email)) {
-                    userEmails.push(email);
-                    renderEmails();
+            const val = emailInput.value.trim();
+            if (val && val.includes('@')) {
+                if (!emailsArray.includes(val)) {
+                    emailsArray.push(val);
+                    renderChips();
                     emailInput.value = '';
                 }
-            } else {
-                alert('Ingrese un email válido');
             }
         });
     }
 
-    function renderEmails() {
+    function renderChips() {
         emailList.innerHTML = '';
-        userEmails.forEach((email, idx) => {
+        emailsArray.forEach((em, i) => {
             const chip = document.createElement('div');
-            chip.style = 'background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 6px 12px; border-radius: 8px; margin: 4px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 13px;';
-            chip.innerHTML = `<span>${email}</span><i class="fas fa-times" style="cursor:pointer" onclick="window.delEmail(${idx})"></i>`;
+            chip.style = 'background:rgba(245,158,11,0.1);color:#f59e0b;padding:5px 10px;border-radius:8px;margin:4px;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(245,158,11,0.2);font-size:12px;';
+            chip.innerHTML = `<span>${em}</span><i class="fas fa-times" style="cursor:pointer" onclick="window.delEm(${i})"></i>`;
             emailList.appendChild(chip);
         });
     }
 
-    window.delEmail = (idx) => {
-        userEmails.splice(idx, 1);
-        renderEmails();
-    };
+    window.delEm = (i) => { emailsArray.splice(i, 1); renderChips(); };
 
-    // --- 4. DATA INTEGRATION (FIRESTORE) ---
+    // 5. DATA SYNC (FIRESTORE)
     const db = window.firebaseDb;
     const tools = window.firestoreTools;
 
     if (db && tools) {
-        tools.onSnapshot(tools.collection(db, "brokers"), (snapshot) => {
-            const data = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-            updateDashboard(data);
+        tools.onSnapshot(tools.collection(db, "brokers"), (snap) => {
+            const brokers = snap.docs.map(d => ({id:d.id, ...d.data()}));
+            updateUI(brokers);
         });
     }
 
-    function updateDashboard(brokers) {
+    function updateUI(brokers) {
         // Stats
         const total = brokers.length;
         const sent = brokers.filter(b => ['enviado', 'en_proceso'].includes((b.status || '').toLowerCase())).length;
         const deleted = brokers.filter(b => (b.status || '').toLowerCase() === 'eliminado').length;
 
-        // Inyectar con seguridad
-        const setVal = (sel, val) => { const el = document.querySelector(sel); if(el) el.textContent = val; };
-        setVal('.mini-stats:nth-child(1) .mini-value', total);
-        setVal('.mini-stats:nth-child(2) .mini-value', sent);
-        setVal('.mini-stats:nth-child(3) .mini-value', deleted);
+        const updateText = (s, v) => { const el = document.querySelector(s); if(el) el.textContent = v; };
+        updateText('.mini-stats:nth-child(1) .mini-value', total);
+        updateText('.mini-stats:nth-child(2) .mini-value', sent);
+        updateText('.mini-stats:nth-child(3) .mini-value', deleted);
 
-        // Circular Score
+        // Circle
         const score = total > 0 ? Math.round((deleted / total) * 100) : 0;
-        const circle = document.querySelector('.circle');
+        const circ = document.querySelector('.circle');
         const pct = document.querySelector('.percentage');
-        if (circle) circle.style.strokeDasharray = `${score}, 100`;
+        if (circ) circ.style.strokeDasharray = `${score}, 100`;
         if (pct) pct.textContent = `${score}%`;
 
-        // Render Table
+        // Table
         const tbody = document.querySelector('.broker-table tbody');
         if (tbody) {
             tbody.innerHTML = '';
@@ -117,11 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const status = (b.status || 'pendiente').toLowerCase();
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong style="color:#fff">${b.name}</strong></td>
-                    <td><span class="badge ${b.risk === 'Alto' || b.risk === 'Extremadamente Alto' ? 'high' : 'medium'}">${b.risk}</span></td>
+                    <td><strong>${b.name}</strong></td>
+                    <td><span class="badge ${status === 'enviado' ? 'medium' : 'high'}">${b.risk || 'Alto'}</span></td>
                     <td>${new Date().toLocaleDateString()}</td>
                     <td><span class="status-${status}">${status.toUpperCase()}</span></td>
-                    <td><button class="btn-icon" onclick="window.action('${b.name}')"><i class="fas fa-paper-plane"></i></button></td>
+                    <td><button class="btn-icon" onclick="window.requestAction('${b.name}')"><i class="fas fa-paper-plane"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -129,4 +136,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-window.action = (name) => alert('Solicitud enviada a ' + name);
+window.requestAction = (name) => alert('Solicitud enviada para ' + name);
