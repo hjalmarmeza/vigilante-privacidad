@@ -71,7 +71,8 @@ async function sendRemovalRequest(broker) {
     }
 
     const messageData = {
-        toAddress: broker.optOutEmail, // v0 suele usar toAddress o to
+        inbox_id: AGENTMAIL_INBOX_ID, // El ID ahora va en el cuerpo
+        to_address: broker.optOutEmail,
         subject: `REQUERIMIENTO LEGAL (GDPR): Derecho al Olvido - ${broker.name}`,
         body: `
 Estimado equipo de Privacidad de ${broker.name},
@@ -84,10 +85,9 @@ Identidad de Protección: ${SENDER_EMAIL}
         `.trim()
     };
 
-    // AgentMail v0 espera el ID en la URL: /v0/inboxes/{email}/messages
-    const url = `https://api.agentmail.to/v0/inboxes/${encodeURIComponent(AGENTMAIL_INBOX_ID)}/messages`;
+    const url = `https://api.agentmail.to/v0/messages`;
     
-    console.log(`📤 Intentando enviar a través de AgentMail URL: ${url}`);
+    console.log(`📤 Enviando a través de AgentMail API: ${url} para el inbox ${AGENTMAIL_INBOX_ID}`);
 
     return await axios.post(url, messageData, {
         headers: {
