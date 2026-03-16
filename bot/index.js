@@ -3,7 +3,6 @@ const axios = require('axios');
 
 // Configuración de variables de entorno
 const AGENTMAIL_API_KEY = process.env.AGENTMAIL_API_KEY;
-// Usamos el email completo como ID del inbox, que es el estándar de AgentMail v0
 const AGENTMAIL_INBOX_ID = process.env.AGENTMAIL_INBOX_ID || 'legal.protection1@agentmail.to';
 const SENDER_EMAIL = process.env.SENDER_EMAIL || 'legal.protection1@agentmail.to';
 
@@ -18,9 +17,11 @@ function initFirebase() {
 
     try {
         const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        }
         console.log('✅ Firebase inicializado correctamente.');
     } catch (error) {
         console.error('❌ ERROR al parsear FIREBASE_SERVICE_ACCOUNT:', error.message);
@@ -38,20 +39,52 @@ async function runVigilante() {
     const db = admin.firestore();
 
     try {
-        // Simulación de brokers para el MVP
-        const brokers = [
-            { name: "Acxiom Corporation", optOutEmail: "askprivacy@acxiom.com" },
-        ];
+        // Obtenemos los brokers que están en estado 'pendiente'
+        console.log('📡 Buscando brokers pendientes de eliminación...');
+        const brokersSnap = await db.collection('brokers')
+            .where('status', '==', 'pendiente')
+            .get();
 
-        for (const broker of brokers) {
-            console.log(`📡 Procesando reclamación legal para: ${broker.name}`);
+        if (brokersSnap.empty) {
+            console.log('📭 No hay brokers pendientes para procesar.');
+            return;
+        }
+
+        console.log(`🔍 Se han encontrado ${brokersSnap.size} brokers para procesar.`);
+
+        for (const doc of brokersSnap.docs) {
+            const broker = doc.data();
+            const brokerId = doc.id;
+            
+            console.log(`📧 Enviando requerimiento a: ${broker.name} (${broker.optOutEmail})`);
             
             try {
+                // Cambiamos el estado a 'en_proceso' antes de enviar
+                await db.collection('brokers').doc(brokerId).update({
+                    status: 'en_proceso',
+                    lastActionAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
                 const response = await sendRemovalRequest(broker);
-                console.log(`✅ Éxito con ${broker.name}: Status ${response.status}`);
+                
+                if (response.status === 200 || response.status === 201) {
+                    console.log(`✅ Éxito con ${broker.name}: Status ${response.status}`);
+                    
+                    // Actualizamos a 'enviado' después del éxito
+                    await db.collection('brokers').doc(brokerId).update({
+                        status: 'enviado',
+                        sentAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                }
             } catch (error) {
                 console.error(`⚠️ Fallo al enviar a ${broker.name}:`, 
                     error.response ? JSON.stringify(error.response.data) : error.message);
+                
+                // Si falla, lo devolvemos a 'pendiente' o marcamos error
+                await db.collection('brokers').doc(brokerId).update({
+                    status: 'pendiente',
+                    lastError: error.message
+                });
             }
         }
 
@@ -84,11 +117,8 @@ Identidad de Protección: ${SENDER_EMAIL}
         `.trim()
     };
 
-    // La ruta oficial para enviar es: /v0/inboxes/{id}/messages/send
     const url = `https://api.agentmail.to/v0/inboxes/${encodeURIComponent(AGENTMAIL_INBOX_ID)}/messages/send`;
     
-    console.log(`📤 Enviando mensaje a través de: ${url}`);
-
     return await axios.post(url, messageData, {
         headers: {
             'Authorization': `Bearer ${AGENTMAIL_API_KEY}`,
