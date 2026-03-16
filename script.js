@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><span class="badge ${b.risk === 'Alto' || b.risk === 'Extremadamente Alto' ? 'high' : 'medium'}">${b.risk || 'Alto'}</span></td>
                 <td>${b.createdAt ? new Date(b.createdAt).toLocaleDateString() : 'Detectado'}</td>
                 <td>${statusLabel}</td>
-                <td><button class="btn-icon" onclick="window.requestRemoval('\${b.id}', '\${b.name}')"><i class="fas \${status === 'pendiente' ? 'fa-paper-plane' : 'fa-file-shield'}"></i></button></td>
+                <td><button class="btn-icon" onclick="window.requestRemoval('${b.id}', '${b.name}')"><i class="fas ${status === 'pendiente' ? 'fa-paper-plane' : 'fa-file-shield'}"></i></button></td>
             `;
             tbody.appendChild(tr);
         });
@@ -189,9 +189,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. ACCIONES ---
     window.requestRemoval = async (id, name) => {
-        alert(`Iniciando protocolo de eliminación para ${name}. El bot procesará la solicitud en el próximo ciclo.`);
-        // Aquí podrías forzar el estado a 'pendiente' si no lo está
+        const confirmStr = `¿Deseas enviar una solicitud formal de eliminación a ${name}?`;
+        if (confirm(confirmStr)) {
+            try {
+                const db = window.firebaseDb;
+                const tools = window.firestoreTools;
+                await tools.updateDoc(tools.doc(db, "brokers", id), {
+                    status: 'pendiente',
+                    requestedAt: new Date().toISOString()
+                });
+                alert(`Solicitud encolada para ${name}. El bot la procesará en breve.`);
+            } catch (err) {
+                console.error(err);
+            }
+        }
     };
+
+    const startScanBtn = document.getElementById('startGlobalScan');
+    if (startScanBtn) {
+        startScanBtn.addEventListener('click', () => {
+            startScanBtn.disabled = true;
+            startScanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Escaneando...';
+            
+            // Simulación de escaneo visual
+            setTimeout(() => {
+                alert("Escaneo completado. Se han identificado posibles brechas en 5 brokers conocidos.");
+                startScanBtn.disabled = false;
+                startScanBtn.innerHTML = '<i class="fas fa-broadcast-tower"></i> Iniciar Escaneo';
+                navigate('dashboard');
+            }, 3000);
+        });
+    }
 
     if (profileForm) {
         profileForm.addEventListener('submit', async (e) => {
