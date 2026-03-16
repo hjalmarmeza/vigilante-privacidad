@@ -2,35 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Vigilante - Privacidad Blindada</title>
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar (Desktop Only) -->
-        <aside class="sidebar">
-            <div class="logo">
-                <i class="fas fa-user-shield"></i>
-                <span>Vigilante</span>
-            </div>
-            <nav>
-                <a href="#" class="nav-item active" data-view="dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
-                <a href="#" class="nav-item" data-view="escaneos"><i class="fas fa-search"></i> Escaneos</a>
-                <a href="#" class="nav-item" data-view="privacidad"><i class="fas fa-shield-alt"></i> Privacidad</a>
-                <a href="#" class="nav-item" data-view="historial"><i class="fas fa-history"></i> Historial</a>
-                <a href="#" class="nav-item" data-view="ajustes" id="openConfigDesktop"><i class="fas fa-cog"></i> Ajustes</a>
-            </nav>
-        </aside>
-
+        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar Mobile -->
             <header class="top-bar">
                 <div class="user-profile">
-                    <div class="avatar"><i class="fas fa-user"></i></div>
+                    <div class="avatar"><i class="fas fa-user-shield" style="color:var(--accent)"></i></div>
                     <div class="user-info">
                         <strong>Hjalmar Meza</strong>
                         <small>Plan Enterprise Free</small>
@@ -39,164 +23,86 @@
                 <button class="btn-icon" id="openConfig"><i class="fas fa-sliders-h"></i></button>
             </header>
 
-            <!-- Dashboard Section -->
             <section id="dashboard-view" class="view-section active">
-                <div class="dashboard-grid">
-                    <div class="glass-card score-card">
-                        <h3>Salud de tu Privacidad</h3>
-                        <div class="circle-chart">
-                            <svg viewBox="0 0 36 36" class="circular-chart orange">
-                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="circle" stroke-dasharray="20, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div class="percentage">20%</div>
-                        </div>
-                        <p class="card-text">Tu perfil de privacidad está en riesgo. Completa la configuración.</p>
-                        <button class="btn-primary" onclick="document.getElementById('configModal').classList.add('active')">Completar Perfil</button>
+                <div class="glass-card score-card">
+                    <h3 style="margin-bottom:20px; font-weight:800; font-size:20px;">Salud de tu Privacidad</h3>
+                    <div class="circle-chart">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" stroke-dasharray="20, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="percentage">20%</div>
                     </div>
-
-                    <div class="stats-row">
-                        <div class="glass-card mini-stats">
-                            <div class="mini-icon cyan"><i class="fas fa-database"></i></div>
-                            <div>
-                                <span class="mini-value">5</span>
-                                <span class="mini-label">Brokers Detectados</span>
-                            </div>
-                        </div>
-                        <div class="glass-card mini-stats">
-                            <div class="mini-icon amber"><i class="fas fa-paper-plane"></i></div>
-                            <div>
-                                <span class="mini-value">2</span>
-                                <span class="mini-label">Enviados</span>
-                            </div>
-                        </div>
-                        <div class="glass-card mini-stats">
-                            <div class="mini-icon green"><i class="fas fa-check-circle"></i></div>
-                            <div>
-                                <span class="mini-value">0</span>
-                                <span class="mini-label">Eliminados</span>
-                            </div>
-                        </div>
-                    </div>
+                    <p style="color:var(--text-muted); margin: 25px 0; font-size:15px;">Tu perfil está incompleto. Configura los datos para el Vigilante.</p>
+                    <button class="btn-primary" onclick="document.getElementById('configModal').classList.add('active')">Completar Perfil ahora</button>
                 </div>
 
-                <div class="glass-card table-section" style="margin-top: 24px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3>Acciones Pendientes</h3>
-                        <i class="fas fa-shield-virus" style="color:var(--accent)"></i>
-                    </div>
-                    <div class="broker-table-wrapper">
-                        <table class="broker-table">
-                            <thead>
-                                <tr>
-                                    <th>Data Broker</th>
-                                    <th>Riesgo</th>
-                                    <th>Fecha Detectado</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dinámico -->
-                            </tbody>
-                        </table>
+                <div class="stats-row" style="display:grid; grid-template-columns:1fr; gap:15px; margin-top:20px;">
+                    <div class="glass-card" style="display:flex; align-items:center; gap:20px; padding:20px;">
+                        <i class="fas fa-fingerprint" style="font-size:24px; color:var(--accent)"></i>
+                        <div><span style="display:block; font-size:22px; font-weight:900;">5</span><small style="color:var(--text-muted)">Brokers Detectados</small></div>
                     </div>
                 </div>
             </section>
 
-            <!-- Secciones Vacías (Auditadas para Navegación) -->
             <section id="escaneos-view" class="view-section">
-                <div class="glass-card">
-                    <h2>Escaneos Globales</h2>
-                    <p style="color:var(--text-muted); margin: 20px 0;">Analiza la web profunda en busca de tus datos personales.</p>
-                    <button class="btn-primary" id="startFullScan">Iniciar Escaneo Global</button>
-                </div>
+                <div class="glass-card"><h2>Escaneos Globales</h2><p>Estado: Protegido</p></div>
             </section>
-
             <section id="privacidad-view" class="view-section">
-                <div class="glass-card">
-                    <h2>Centro de Privacidad</h2>
-                    <p style="color:var(--text-muted);">Gestiona tus preferencias de seguridad.</p>
-                </div>
+                <div class="glass-card"><h2>Privacidad</h2><p>Configuración de Blindaje</p></div>
             </section>
-
             <section id="historial-view" class="view-section">
-                <div class="glass-card">
-                    <h2>Historial de Solicitudes</h2>
-                    <p style="color:var(--text-muted);">Aquí verás todas las eliminaciones confirmadas.</p>
-                </div>
+                <div class="glass-card"><h2>Historial</h2><p>Sin solicitudes recientes</p></div>
             </section>
-
         </main>
 
-        <!-- Navigation Mobile (REPARADA) -->
         <nav class="mobile-nav">
-            <a href="#" class="nav-item-mobile active" data-view="dashboard">
-                <i class="fas fa-chart-pie"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item-mobile" data-view="escaneos">
-                <i class="fas fa-search-location"></i>
-                <span>Escaneos</span>
-            </a>
-            <a href="#" class="nav-item-mobile" data-view="privacidad">
-                <i class="fas fa-user-shield"></i>
-                <span>Privacidad</span>
-            </a>
-            <a href="#" class="nav-item-mobile" data-view="historial">
-                <i class="fas fa-history"></i>
-                <span>Historial</span>
-            </a>
-            <a href="#" class="nav-item-mobile" data-view="ajustes">
-                <i class="fas fa-user-cog"></i>
-                <span>Ajustes</span>
-            </a>
+            <a href="#" class="nav-item-mobile active" data-view="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="#" class="nav-item-mobile" data-view="escaneos"><i class="fas fa-search"></i><span>Escaneos</span></a>
+            <a href="#" class="nav-item-mobile" data-view="privacidad"><i class="fas fa-shield-alt"></i><span>Privacidad</span></a>
+            <a href="#" class="nav-item-mobile" data-view="historial"><i class="fas fa-history"></i><span>Historial</span></a>
+            <a href="#" class="nav-item-mobile" data-view="ajustes"><i class="fas fa-cog"></i><span>Ajustes</span></a>
         </nav>
 
-        <!-- Modal Config (REDISEÑO PREMIUM v3) -->
+        <!-- Modal Config (ULTRA PREMIUM REDESIGN) -->
         <div id="configModal" class="modal">
             <div class="modal-content">
-                <button class="close-modal"><i class="fas fa-times"></i></button>
+                <button class="close-modal"><i class="fas fa-chevron-down"></i></button>
                 <div class="modal-header">
-                    <h2><i class="fas fa-sliders-h" style="color:var(--accent)"></i> Perfil de Vigilancia</h2>
+                    <h2><i class="fas fa-user-shield" style="color:var(--accent)"></i> Configuración</h2>
                 </div>
                 <form id="profileForm" class="config-form">
                     <div class="form-group">
                         <label>Nombre Completo</label>
-                        <input type="text" id="profileName" placeholder="Tu nombre oficial">
+                        <input type="text" id="profileName" placeholder="Ej. Hjalmar Meza">
                     </div>
                     <div class="form-group">
-                        <label>Teléfono (Formato Internacional)</label>
+                        <label>Teléfono Móvil</label>
                         <input type="tel" id="profilePhone" placeholder="+51 999 999 999">
                     </div>
                     <div class="form-group">
-                        <label>Emails a Monitorear</label>
+                        <label>Correo Electrónico</label>
                         <div class="email-input-group">
-                            <input type="email" id="emailInput" placeholder="correo@ejemplo.com">
-                            <button type="button" class="btn-secondary" id="addEmailBtn" style="padding:0 24px">Añadir</button>
+                            <input type="email" id="emailInput" placeholder="tu@correo.com">
+                            <button type="button" class="btn-add-email" id="addEmailBtn">Añadir</button>
                         </div>
-                        <div id="emailList" class="email-chips"></div>
+                        <div id="emailList" class="email-chips" style="margin-top:10px;"></div>
                     </div>
-                    <button type="submit" class="btn-primary" style="margin-top:20px">Sincronizar con Firebase</button>
+                    <button type="submit" class="btn-primary" style="margin-top:20px;">Sincronizar Datos</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script>
-        // Configuración Global Firebase
-        const firebaseConfig = {
-            projectId: "vigilante-privacidad-hm",
-            apiKey: "dummy-key"
-        };
+        const firebaseConfig = { projectId: "vigilante-privacidad-hm", apiKey: "dummy-key" };
         firebase.initializeApp(firebaseConfig);
         window.firebaseDb = firebase.firestore();
         window.firestoreTools = {
-            collection: (db, path) => db.collection(path),
-            onSnapshot: (coll, cb) => coll.onSnapshot(cb)
+            collection: (db, p) => db.collection(p),
+            onSnapshot: (c, cb) => c.onSnapshot(cb)
         };
     </script>
     <script src="script.js"></script>
