@@ -71,10 +71,9 @@ async function sendRemovalRequest(broker) {
     }
 
     const messageData = {
-        inbox_id: AGENTMAIL_INBOX_ID, // El ID ahora va en el cuerpo
-        to_address: broker.optOutEmail,
+        to: broker.optOutEmail,
         subject: `REQUERIMIENTO LEGAL (GDPR): Derecho al Olvido - ${broker.name}`,
-        body: `
+        text: `
 Estimado equipo de Privacidad de ${broker.name},
 
 Por medio de la presente, en ejercicio de mis derechos bajo el Reglamento General de Protección de Datos (GDPR) y normativas de privacidad vigentes, solicito la supresión definitiva de toda mi información personal de sus bases de datos y sistemas.
@@ -85,9 +84,10 @@ Identidad de Protección: ${SENDER_EMAIL}
         `.trim()
     };
 
-    const url = `https://api.agentmail.to/v0/messages`;
+    // La ruta oficial para enviar es: /v0/inboxes/{id}/messages/send
+    const url = `https://api.agentmail.to/v0/inboxes/${encodeURIComponent(AGENTMAIL_INBOX_ID)}/messages/send`;
     
-    console.log(`📤 Enviando a través de AgentMail API: ${url} para el inbox ${AGENTMAIL_INBOX_ID}`);
+    console.log(`📤 Enviando mensaje a través de: ${url}`);
 
     return await axios.post(url, messageData, {
         headers: {
