@@ -27,6 +27,7 @@ jobs:
           cd bot
           node index.js
         env:
-          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
-          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
-          SENDER_EMAIL: "legal.privacy.agent.01@proton.me"
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          AGENTMAIL_API_KEY: ${{ secrets.AGENTMAIL_API_KEY }}
+          AGENTMAIL_INBOX_ID: 'legal-protection1'
+          SENDER_EMAIL: 'legal.protection1@agentmail.to'
