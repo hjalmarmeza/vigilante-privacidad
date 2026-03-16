@@ -56,4 +56,53 @@ document.addEventListener('DOMContentLoaded', () => {
             row.style.background = '';
         });
     });
+
+    // LÓGICA DEL MODAL DE CONFIGURACIÓN
+    const modal = document.getElementById('configModal');
+    const openBtn = document.getElementById('openConfig');
+    const closeBtn = document.querySelector('.close-modal');
+    const profileForm = document.getElementById('profileForm');
+
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+    }
+
+    // Cerrar al hacer clic fuera del modal
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+
+    // Manejo del Formulario (Guardado Simulado)
+    if (profileForm) {
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const submitBtn = profileForm.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando en Firebase...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Perfil Guardado';
+                submitBtn.style.background = '#10b981';
+                
+                // Actualizar UI del Dashboard
+                setTimeout(() => {
+                    modal.classList.remove('active');
+                    percentageEl.textContent = '100%';
+                    circleEl.style.strokeDasharray = '100, 100';
+                    document.querySelector('.score-msg').innerHTML = 'Perfil configurado para <strong>Hjalmar Meza</strong>. Iniciando escaneo...';
+                    btnScan.click(); // Iniciar escaneo automáticamente
+                }, 1500);
+            }, 2000);
+        });
+    }
 });

@@ -1,0 +1,32 @@
+name: Privacy Removal Bot
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Ejecutar todos los lunes a las 3:00 AM UTC
+  workflow_dispatch: # Permitir ejecución manual para pruebas
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: |
+          cd bot
+          npm install
+
+      - name: Execute Removal Script
+        run: |
+          cd bot
+          node index.js
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          SENDER_EMAIL: "legal.privacy.agent.01@proton.me"

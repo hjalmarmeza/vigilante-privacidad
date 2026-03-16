@@ -56,12 +56,12 @@
                     <div class="circle-chart">
                         <svg viewBox="0 0 36 36" class="circular-chart green">
                             <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path class="circle" stroke-dasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                         </svg>
-                        <div class="percentage">68%</div>
+                        <div class="percentage">0%</div>
                     </div>
-                    <p class="score-msg">Has recuperado el control en <strong>42 plataformas</strong></p>
-                    <button class="btn-primary">Ver Sugerencias</button>
+                    <p class="score-msg">Tu perfil está incompleto. Configura tus datos para iniciar el escaneo.</p>
+                    <button class="btn-primary" id="openConfig">Completar Perfil</button>
                 </div>
 
                 <!-- Stats Counters -->
@@ -165,6 +165,48 @@
             </section>
         </main>
     </div>
+    <div id="configModal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-shield"></i> Configuración de Perfil Shield</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p class="modal-desc">Ingresa los datos exactos que los brokers suelen recolectar para que podamos localizarlos.</p>
+            
+            <form id="profileForm" class="config-form">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" placeholder="Ej: Hjalmar Meza Cortez" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email Principal</label>
+                        <input type="email" placeholder="email@ejemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" placeholder="+51 900 000 000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección Física (Opcional)</label>
+                    <input type="text" placeholder="Ciudad, País o Dirección">
+                </div>
+                <div class="form-group">
+                    <label>Correo "Escudo" para Envíos</label>
+                    <div class="input-with-hint">
+                        <input type="email" value="legal.protection1@agentmail.to" readonly>
+                        <small>Tu identidad oficial de AgentMail. Todas las respuestas de brokers llegarán aquí.</small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar en Firebase</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
