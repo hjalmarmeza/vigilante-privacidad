@@ -1,176 +1,237 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Vigilante de Privacidad Dashboard Iniciado');
+    console.log('--- VIGILANTE OS: SECURE CORE INITIALIZED ---');
 
-    const db = window.firebaseDb;
-    const { collection, onSnapshot, query, setDoc, doc } = window.firestoreTools;
+    // --- 1. ELEMENTOS CORE ---
+    const navItems = document.querySelectorAll('.nav-item, .nav-item-mobile');
+    const sections = document.querySelectorAll('.view-section');
+    const modal = document.getElementById('configModal');
+    const profileForm = document.getElementById('profileForm');
+    const emailList = document.getElementById('emailList');
+    const emailInput = document.getElementById('emailInput');
+    const addEmailBtn = document.getElementById('addEmailBtn');
+    
+    let userEmails = [];
 
-    // --- NAVEGACIÓN LATERAL ---
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const view = item.getAttribute('data-view');
-            
-            // Actualizar clase activa
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
+    // --- 2. MOTOR DE NAVEGACIÓN ---
+    function navigate(viewId) {
+        if (viewId === 'configuracion') {
+            modal.classList.add('active');
+            return;
+        }
 
-            console.log(`Cambiando a vista: ${view}`);
-            // Aquí podríamos ocultar/mostrar secciones si tuvieramos IDs de contenedores
-            if (view === 'configuracion') {
-                document.getElementById('openConfig').click();
+        // Actualizar UI de navegación
+        navItems.forEach(item => {
+            if (item.getAttribute('data-view') === viewId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
             }
+        });
+
+        // Cambiar sección visible
+        sections.forEach(sec => {
+            if (sec.id === `${viewId}-view`) {
+                sec.classList.add('active');
+            } else {
+                sec.classList.remove('active');
+            }
+        });
+
+        // Cerrar modal si se navega a otra vista
+        if (modal) modal.classList.remove('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    navItems.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const view = btn.getAttribute('data-view');
+            navigate(view);
         });
     });
 
-    // --- CONEXIÓN REAL CON FIRESTORE (STATS Y TABLA) ---
-    if (db) {
-        onSnapshot(collection(db, "brokers"), (snapshot) => {
-            const total = snapshot.size;
-            const solicitados = snapshot.docs.filter(d => d.data().status === 'enviado' || d.data().status === 'en_proceso').length;
-            const eliminados = snapshot.docs.filter(d => d.data().status === 'eliminado').length;
+    // Control Modal
+    const closeModalBtn = document.querySelector('.close-modal');
+    if (closeModalBtn) closeModalBtn.onclick = () => modal.classList.remove('active');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+    }
 
-            if (total > 0) {
-                document.querySelector('.mini-stats:nth-child(1) .mini-value').textContent = total;
-                document.querySelector('.mini-stats:nth-child(2) .mini-value').textContent = solicitados;
-                document.querySelector('.mini-stats:nth-child(3) .mini-value').textContent = eliminados;
-                
-                // --- RENDERIZADO DINÁMICO DE LA TABLA ---
-                const tbody = document.querySelector('.broker-table tbody');
-                tbody.innerHTML = ''; // Limpiar placeholders
+    // --- 3. CONEXIÓN FIREBASE ---
+    function initFirebase() {
+        const db = window.firebaseDb;
+        const tools = window.firestoreTools;
 
-                snapshot.docs.slice(0, 5).forEach(doc => {
-                    const data = doc.data();
-                    const tr = document.createElement('tr');
-                    
-                    const statusClass = data.status === 'en_proceso' ? 'status-running' : 
-                                      data.status === 'eliminado' ? 'status-done' : 'status-pending';
-                    const statusIcon = data.status === 'en_proceso' ? '<i class="fas fa-spinner fa-spin"></i>' : 
-                                     data.status === 'eliminado' ? '<i class="fas fa-circle-check"></i>' : '';
-                    const actionIcon = data.status === 'pendiente' ? 'fa-paper-plane' : 'fa-eye';
+        if (!db || !tools) {
+            setTimeout(initFirebase, 500);
+            return;
+        }
 
-                    tr.innerHTML = `
-                        <td>
-                            <div class="broker-name">
-                                <div class="initial" style="background: var(--primary-gradient);">${data.name.charAt(0)}</div>
-                                <span>${data.name}</span>
-                            </div>
-                        </td>
-                        <td><span class="badge ${data.risk === 'Medio' ? 'medium' : 'high'}">${data.risk}</span></td>
-                        <td>${new Date(data.createdAt || Date.now()).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                        <td><span class="${statusClass}">${statusIcon} ${data.status.replace('_', ' ').toUpperCase()}</span></td>
-                        <td><button class="btn-icon"><i class="fas ${actionIcon}"></i></button></td>
-                    `;
-                    
-                    // Re-vincular eventos a los nuevos botones
-                    const btn = tr.querySelector('.btn-icon');
-                    btn.addEventListener('click', () => handleAction(data.name, actionIcon === 'fa-paper-plane'));
-                    
-                    tbody.appendChild(tr);
-                });
+        console.log('✅ Firebase Bridge Ready');
+
+        // Escuchar cambios en el perfil del usuario para validar el inicio
+        tools.onSnapshot(tools.doc(db, "config", "user_profile"), (doc) => {
+            if (doc.exists()) {
+                const profile = doc.data();
+                updateProfileUI(profile);
+                // Si hay perfil, activar escucha de brokers
+                listenToBrokers(db, tools);
+            } else {
+                console.log('⚠️ Perfil no encontrado. Esperando configuración.');
+                showEmptyState();
             }
         });
     }
 
-    function handleAction(name, isSend) {
-        if (isSend) {
-            alert(`Solicitud enviada a ${name}. Procesando...`);
-        } else {
-            alert(`Detalles de ${name}: Verificado bajo estándar GDPR.`);
-        }
+    function updateProfileUI(profile) {
+        userEmails = profile.emails || [];
+        document.getElementById('profileName').value = profile.nombre || '';
+        document.getElementById('profilePhone').value = profile.telefono || '';
+        document.getElementById('profileAddress').value = profile.direccion || '';
+        renderEmailChips();
+
+        const healthPct = 100; // Si tiene perfil, asumimos progreso inicial
+        document.getElementById('healthPct').textContent = `${healthPct}%`;
+        document.getElementById('healthCircle').style.strokeDasharray = `${healthPct}, 100`;
+        document.getElementById('healthMsg').innerHTML = `Protegiendo a <strong>${profile.nombre}</strong> con ${userEmails.length} emails.`;
     }
 
-    // --- GESTIÓN DE MÚLTIPLES EMAILS ---
-    const emailInput = document.getElementById('emailInput');
-    const addEmailBtn = document.getElementById('addEmailBtn');
-    const emailListContainer = document.getElementById('emailList');
-    let protectedEmails = [];
-
-    function renderEmails() {
-        emailListContainer.innerHTML = '';
-        protectedEmails.forEach((email, index) => {
+    function renderEmailChips() {
+        emailList.innerHTML = '';
+        userEmails.forEach((email, index) => {
             const chip = document.createElement('div');
-            chip.className = 'chip';
-            chip.innerHTML = `${email} <button type="button" data-index="${index}">&times;</button>`;
-            emailListContainer.appendChild(chip);
+            chip.className = 'chip-premium';
+            chip.innerHTML = `${email} <i class="fas fa-times-circle" onclick="window.removeEmail(${index})"></i>`;
+            emailList.appendChild(chip);
         });
     }
+
+    window.removeEmail = (index) => {
+        userEmails.splice(index, 1);
+        renderEmailChips();
+    };
 
     if (addEmailBtn) {
         addEmailBtn.addEventListener('click', () => {
-            const email = emailInput.value.trim();
-            if (email && !protectedEmails.includes(email)) {
-                protectedEmails.push(email);
+            const val = emailInput.value.trim();
+            if (val && val.includes('@') && !userEmails.includes(val)) {
+                userEmails.push(val);
+                renderEmailChips();
                 emailInput.value = '';
-                renderEmails();
             }
         });
     }
 
-    emailListContainer.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            const index = e.target.getAttribute('data-index');
-            protectedEmails.splice(index, 1);
-            renderEmails();
+    // --- 4. GESTIÓN DE BROKERS ---
+    function listenToBrokers(db, tools) {
+        tools.onSnapshot(tools.collection(db, "brokers"), (snapshot) => {
+            const brokers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderDashboard(brokers);
+        });
+    }
+
+    function renderDashboard(brokers) {
+        const tbody = document.getElementById('brokerTbody');
+        if (!tbody) return;
+
+        const total = brokers.length;
+        const sent = brokers.filter(b => ['enviado', 'en_proceso'].includes((b.status || '').toLowerCase())).length;
+        const deleted = brokers.filter(b => (b.status || '').toLowerCase() === 'eliminado').length;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statSent').textContent = sent;
+        document.getElementById('statDeleted').textContent = deleted;
+
+        tbody.innerHTML = '';
+        if (brokers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-muted)">No se detectaron brokers en riesgo.</td></tr>';
+            return;
         }
-    });
 
-    // --- MANEJO DEL PERFIL (REAL) ---
-    const modal = document.getElementById('configModal');
-    const openBtn = document.getElementById('openConfig');
-    const closeBtn = document.querySelector('.close-modal');
-    const profileForm = document.getElementById('profileForm');
+        brokers.slice(0, 10).forEach(b => {
+            const status = (b.status || 'pendiente').toLowerCase();
+            const tr = document.createElement('tr');
+            
+            const statusLabel = status === 'en_proceso' ? '<span class="status-running"><i class="fas fa-spinner fa-spin"></i> EN PROCESO</span>' :
+                                status === 'eliminado' ? '<span class="status-done"><i class="fas fa-check-circle"></i> ELIMINADO</span>' :
+                                status === 'enviado' ? '<span class="status-done"><i class="fas fa-paper-plane"></i> ENVIADO</span>' :
+                                '<span class="status-pending">PENDIENTE</span>';
 
-    if (openBtn) openBtn.addEventListener('click', () => modal.classList.add('active'));
-    if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+            tr.innerHTML = `
+                <td>
+                    <div class="broker-name">
+                        <div class="initial" style="background:var(--card-bg); border:1px solid var(--glass-border)">${b.name.charAt(0)}</div>
+                        <span>${b.name}</span>
+                    </div>
+                </td>
+                <td><span class="badge ${b.risk === 'Alto' || b.risk === 'Extremadamente Alto' ? 'high' : 'medium'}">${b.risk || 'Alto'}</span></td>
+                <td>${b.createdAt ? new Date(b.createdAt).toLocaleDateString() : 'Detectado'}</td>
+                <td>${statusLabel}</td>
+                <td><button class="btn-icon" onclick="window.requestRemoval('${b.id}', '${b.name}')"><i class="fas ${status === 'pendiente' ? 'fa-paper-plane' : 'fa-eye'}"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function showEmptyState() {
+        document.getElementById('brokerTbody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);">Inicia el escaneo completando tu perfil...</td></tr>';
+        document.getElementById('statTotal').textContent = '0';
+        document.getElementById('statSent').textContent = '0';
+        document.getElementById('statDeleted').textContent = '0';
+        document.getElementById('healthPct').textContent = '0%';
+        document.getElementById('healthCircle').style.strokeDasharray = '0, 100';
+    }
+
+    // --- 5. ACCIONES ---
+    window.requestRemoval = async (id, name) => {
+        alert(`Iniciando protocolo de eliminación para ${name}. El bot procesará la solicitud en el próximo ciclo.`);
+        // Aquí podrías forzar el estado a 'pendiente' si no lo está
+    };
 
     if (profileForm) {
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitBtn = profileForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            
-            if (protectedEmails.length === 0) {
-                alert("Por favor, añade al menos un email para proteger.");
+            const btn = profileForm.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+
+            if (userEmails.length === 0) {
+                alert("Debes añadir al menos un email para proteger.");
                 return;
             }
 
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando en Firebase...';
-            submitBtn.disabled = true;
+            btn.textContent = '🛡️ Sincronizando Blindaje...';
+            btn.disabled = true;
 
-            const formData = {
+            const data = {
                 nombre: document.getElementById('profileName').value,
                 telefono: document.getElementById('profilePhone').value,
-                direccion: profileForm.querySelectorAll('input[type="text"]')[1].value, // El de dirección
-                emails: protectedEmails,
+                direccion: document.getElementById('profileAddress').value,
+                emails: userEmails,
                 updatedAt: new Date().toISOString()
             };
 
             try {
-                if (db) {
-                    await setDoc(doc(db, "config", "user_profile"), formData);
-                    console.log('Perfil guardado en Firestore con múltiples emails');
-                }
-
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Guardado Exitoso';
-                submitBtn.style.background = '#10b981';
-
+                const db = window.firebaseDb;
+                const tools = window.firestoreTools;
+                await tools.setDoc(tools.doc(db, "config", "user_profile"), data);
+                
+                btn.textContent = '✅ Perfil Sincronizado';
                 setTimeout(() => {
                     modal.classList.remove('active');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.style.background = '';
-                    submitBtn.disabled = false;
-                    
-                    document.querySelector('.percentage').textContent = '100%';
-                    document.querySelector('.circle').style.strokeDasharray = '100, 100';
-                    document.querySelector('.score-msg').innerHTML = `Perfil activo para <strong>${formData.nombre}</strong> con ${protectedEmails.length} emails protegidos.`;
+                    btn.textContent = originalText;
+                    btn.disabled = false;
                 }, 1500);
-            } catch (error) {
-                console.error("Error al guardar:", error);
-                alert("Error al conectar con Firebase.");
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+            } catch (err) {
+                console.error(err);
+                btn.textContent = '❌ Error de Sincronización';
+                btn.disabled = false;
             }
         });
     }
+
+    // --- 6. INICIO ---
+    window.addEventListener('firebase-ready', initFirebase);
+    initFirebase(); // Re-intento manual
 });
