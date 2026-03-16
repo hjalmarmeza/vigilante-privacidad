@@ -1,5 +1,6 @@
 :root {
     --bg: #070b14;
+    --sidebar-bg: #0f172a;
     --card-bg: rgba(15, 23, 42, 0.7);
     --border: rgba(255, 255, 255, 0.08);
     --accent: #f59e0b;
@@ -10,366 +11,142 @@
     --green: #10b981;
     --red: #ef4444;
     --sidebar-w: 260px;
-    --nav-h: 75px;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    margin: 0; padding: 0; box-sizing: border-box;
     font-family: 'Outfit', sans-serif;
     -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
-    overflow-x: hidden;
-    min-height: 100vh;
+    background: var(--bg); color: var(--text);
+    overflow-x: hidden; min-height: 100vh;
 }
 
 /* =============================================
    LAYOUT & CONTAINERS
    ============================================= */
 
-.app-container {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-}
+.app-container { display: flex; min-height: 100vh; }
 
 .main-content {
-    flex: 1;
-    margin-left: var(--sidebar-w);
-    padding: 30px;
-    transition: all 0.3s ease;
+    flex: 1; margin-left: var(--sidebar-w); padding: 30px;
+    transition: all 0.3s ease; width: calc(100% - var(--sidebar-w));
+}
+
+.sidebar {
+    width: var(--sidebar-w); background: var(--sidebar-bg);
+    border-right: 1px solid var(--border); height: 100vh;
+    position: fixed; padding: 40px 24px; z-index: 1000;
 }
 
 /* =============================================
-   UI COMPONENTS: CARDS & GLASS
+   UI ELEMENTS
    ============================================= */
 
 .glass-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    transition: transform 0.2s ease;
+    background: var(--card-bg); backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border);
+    border-radius: 20px; padding: 24px;
 }
 
-.mini-stats {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
+.mini-stats { display: flex; align-items: center; gap: 15px; }
 .mini-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
 }
-
 .mini-icon.cyan { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
 .mini-icon.amber { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 .mini-icon.green { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-.mini-value {
-    display: block;
-    font-size: 24px;
-    font-weight: 800;
-}
+.mini-value { display: block; font-size: 22px; font-weight: 800; }
+.mini-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-.mini-label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* =============================================
-   CHART: CIRCULAR SCORE
-   ============================================= */
-
-.circle-chart {
-    width: 160px;
-    height: 160px;
-    position: relative;
-    margin: 20px auto;
-}
-
-.circular-chart {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.circle-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.05);
-    stroke-width: 2.8;
-}
-
-.circle {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 2.8;
-    stroke-linecap: round;
-    transition: stroke-dasharray 0.6s ease;
-}
-
-.percentage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 32px;
-    font-weight: 800;
-}
-
-/* =============================================
-   SIDEBAR (DESKTOP ONLY)
-   ============================================= */
-
-.sidebar {
-    width: var(--sidebar-w);
-    background: #0b1120;
-    border-right: 1px solid var(--border);
-    height: 100vh;
-    position: fixed;
-    padding: 40px 24px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1000;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 40px;
-}
-
-.logo i {
-    color: var(--accent);
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-    color: var(--text-muted);
-    text-decoration: none;
-    border-radius: 12px;
-    margin-bottom: 4px;
-    transition: 0.2s;
-}
-
-.nav-item.active {
-    background: rgba(245, 158, 11, 0.1);
-    color: var(--accent);
-}
-
-/* =============================================
-   TOP BAR
-   ============================================= */
-
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.user-info {
-    text-align: right;
-}
-
-.user-info strong {
-    display: block;
-    font-size: 15px;
-}
-
-.user-info small {
-    color: var(--text-muted);
-    font-size: 11px;
-}
-
-.avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* =============================================
-   GRID DE DASHBOARD
-   ============================================= */
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-}
-
-.stats-row {
-    grid-column: span 2;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-}
-
-.score-card { grid-row: span 2; text-align: center; }
+/* TABLE (ELIMINAR EFECTO SOLO TEXTO) */
 .table-section { grid-column: span 2; }
+.table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.broker-table { width: 100%; border-collapse: collapse; }
+.broker-table th { text-align: left; color: var(--text-muted); font-size: 11px; text-transform: uppercase; padding: 12px; border-bottom: 1px solid var(--border); }
+.broker-table td { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 14px; }
+
+.badge { padding: 4px 10px; border-radius: 100px; font-size: 10px; font-weight: 700; }
+.badge.high { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.2); }
+.badge.medium { background: rgba(245, 158, 11, 0.1); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+/* STATUS CLASSES */
+.status-pendiente { color: var(--text-muted); opacity: 0.7; }
+.status-en_proceso { color: var(--accent); font-weight: 600; }
+.status-enviado, .status-eliminado { color: var(--green); font-weight: 600; }
+
+/* CIRCULAR CHART FIX */
+.circle-chart { width: 150px; height: 150px; position: relative; margin: 0 auto; }
+.circular-chart { display: block; width: 100%; height: 100%; fill: none; }
+.circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 2.8; }
+.circle { fill: none; stroke: var(--accent); stroke-width: 2.8; stroke-linecap: round; transition: stroke-dasharray 0.5s ease; }
+.percentage { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: 800; color: #fff; }
 
 /* =============================================
-   MOBILE (RESPONSIVE) - FORCE APP VIBE
+   MODAL (RESTAURADO)
+   ============================================= */
+
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); display: none;
+    align-items: center; justify-content: center; z-index: 9999;
+}
+.modal.active { display: flex; }
+.modal-content {
+    max-width: 500px; width: 95%; background: #0f172a;
+    border: 1px solid var(--border); border-radius: 24px; padding: 30px;
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* =============================================
+   MOBILE OVERRIDES
    ============================================= */
 
 @media (max-width: 850px) {
-    :root {
-        --sidebar-w: 0px !important;
-    }
-
-    .sidebar {
-        display: none !important;
-    }
-
-    .main-content {
-        margin-left: 0 !important;
-        padding: 16px !important;
-        padding-top: 90px !important;
-        padding-bottom: 100px !important;
-        width: 100% !important;
-    }
+    :root { --sidebar-w: 0px !important; }
+    .sidebar { display: none !important; }
+    .main-content { margin-left: 0 !important; padding: 16px !important; padding-top: 80px !important; padding-bottom: 90px !important; width: 100% !important; }
 
     .top-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: rgba(7, 11, 20, 0.85);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        z-index: 1100;
-        padding: 16px 20px;
-        margin-bottom: 0;
-        border-bottom: 1px solid var(--border);
-        height: 75px;
+        position: fixed; top: 0; left: 0; right: 0; height: 75px;
+        background: rgba(7, 11, 20, 0.9); backdrop-filter: blur(15px);
+        padding: 0 20px; border-bottom: 1px solid var(--border);
+        display: flex !important; justify-content: space-between !important; align-items: center !important; z-index: 1100;
     }
-
     .search-bar { display: none !important; }
 
-    .dashboard-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 16px !important;
-    }
+    .dashboard-grid { display: flex !important; flex-direction: column !important; gap: 15px !important; }
+    .stats-row { display: flex !important; flex-direction: column !important; gap: 12px !important; }
+    .score-card { order: -1 !important; text-align: center; }
 
-    .stats-row {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-    }
-
-    .score-card {
-        order: -1 !important; /* Salud arriba */
-    }
-
-    .circle-chart {
-        width: 140px;
-        height: 140px;
-    }
-
-    /* Tablas en móvil */
-    .table-section {
-        overflow-x: auto;
-    }
-
-    .broker-table {
-        min-width: 450px;
-        font-size: 13px;
-    }
-
-    /* BARRA DE NAVEGACIÓN INFERIOR NATIVA */
     .mobile-nav {
-        display: flex !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 80px !important;
-        background: #0c1220 !important;
-        border-top: 1px solid var(--border) !important;
-        z-index: 2000 !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        padding-bottom: 15px !important; /* Margen para iPhones */
+        display: flex !important; position: fixed !important; bottom: 0; left: 0; right: 0;
+        height: 75px; background: #0c1220; border-top: 1px solid var(--border);
+        justify-content: space-around; align-items: center; z-index: 2000;
+        padding-bottom: env(safe-area-inset-bottom);
     }
-
     .nav-item-mobile {
-        color: var(--text-muted);
-        text-decoration: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        flex: 1;
+        color: var(--text-muted); text-decoration: none; display: flex;
+        flex-direction: column; align-items: center; gap: 5px; font-size: 10px; font-weight: 600;
     }
-
     .nav-item-mobile i { font-size: 20px; }
-    .nav-item-mobile span { font-size: 10px; font-weight: 600; }
+    .nav-item-mobile.active { color: var(--accent); }
 
-    .nav-item-mobile.active {
-        color: var(--accent);
-    }
+    .table-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .broker-table { min-width: 500px; }
 }
 
-/* =============================================
-   VISTAS Y ANIMACIONES
-   ============================================= */
+/* UI UTILS */
+.view-section { display: none; }
+.view-section.active { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.view-section {
-    display: none;
-    animation: slideIn 0.3s ease-out;
-}
-
-.view-section.active {
-    display: block;
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Buttons */
-.btn-primary {
-    background: var(--accent);
-    color: #000;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 10px;
-}
+.btn-primary { background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: 800; width: 100%; cursor: pointer; }
+.btn-icon { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; }
+.close-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
