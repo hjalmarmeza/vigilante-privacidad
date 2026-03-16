@@ -133,28 +133,159 @@
                 </div>
             </section>
 
-            <!-- Placeholder Views -->
+            <!-- Escaneos View -->
             <section id="escaneos-view" class="view-section">
-                <div class="placeholder-view">
-                    <i class="fas fa-search-dollar"></i>
-                    <h2>Módulo de Escaneo Profundo</h2>
-                    <p>Aquí aparecerán los resultados de búsqueda en tiempo real por cada uno de tus emails.</p>
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2><i class="fas fa-search-dollar"></i> Escaneo de Filtros y Brechas</h2>
+                        <button class="btn-primary" id="startFullScan">Iniciar Escaneo Global</button>
+                    </div>
+                    
+                    <div class="scan-grid">
+                        <div class="glass-card">
+                            <h3>Fuentes de Datos</h3>
+                            <div class="data-sources">
+                                <div class="source-item">
+                                    <i class="fab fa-google"></i>
+                                    <span>Google Search Index</span>
+                                    <span class="status-running">Monitoreando</span>
+                                </div>
+                                <div class="source-item">
+                                    <i class="fas fa-user-secret"></i>
+                                    <span>Deep Web Breaches</span>
+                                    <span class="status-pending">Pendiente de Escaneo</span>
+                                </div>
+                                <div class="source-item">
+                                    <i class="fas fa-network-wired"></i>
+                                    <span>Data Brokers Network</span>
+                                    <span class="status-done">Actualizado</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card result-summary">
+                            <h3>Presencia en la Red</h3>
+                            <div class="exposure-stat">
+                                <span class="stat-value">64</span>
+                                <span class="stat-label">Sitios con tus datos</span>
+                            </div>
+                            <div class="stat-bar"><div class="stat-fill" style="width: 64%"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card table-section">
+                        <h3>Detalle de Resultados Disponibles</h3>
+                        <table class="broker-table">
+                            <thead>
+                                <tr>
+                                    <th>Fuente / Broker</th>
+                                    <th>Tipo de Dato</th>
+                                    <th>Riesgo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><div class="broker-name"><span>Whitepages</span></div></td>
+                                    <td>Teléfono, Dirección</td>
+                                    <td><span class="badge high">Crítico</span></td>
+                                    <td><span class="status-pending">Pendiente</span></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="broker-name"><span>Spokeo</span></div></td>
+                                    <td>Email, Familiares</td>
+                                    <td><span class="badge high">Crítico</span></td>
+                                    <td><span class="status-running">En proceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="broker-name"><span>BeenVerified</span></div></td>
+                                    <td>Antecedentes</td>
+                                    <td><span class="badge medium">Medio</span></td>
+                                    <td><span class="status-pending">Pendiente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
+            <!-- Privacidad View -->
             <section id="privacidad-view" class="view-section">
-                <div class="placeholder-view">
-                    <i class="fas fa-fingerprint"></i>
-                    <h2>Tu Huella Digital</h2>
-                    <p>Análisis de rastro en redes sociales y filtraciones de bases de datos externas.</p>
+                <div class="section-container">
+                    <div class="header-with-desc">
+                        <h2><i class="fas fa-fingerprint"></i> Tu Identidad Digital Protegida</h2>
+                        <p>Gestión de documentos de identidad y protección de huella biométrica.</p>
+                    </div>
+
+                    <div class="privacy-controls">
+                        <div class="glass-card control-card">
+                            <div class="control-header">
+                                <i class="fas fa-toggle-on"></i>
+                                <h3>Bloqueo de Rastreo</h3>
+                            </div>
+                            <p>Impide que nuevos brokers recolecten tus datos.</p>
+                            <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                        </div>
+                        <div class="glass-card control-card">
+                            <div class="control-header">
+                                <i class="fas fa-envelope-shield"></i>
+                                <h3>Email Masking</h3>
+                            </div>
+                            <p>Tu correo escudo está activo y redirigiendo respuestas.</p>
+                            <div class="masking-info">legal.protection1@agentmail.to</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card status-box">
+                        <div class="shield-icon"><i class="fas fa-shield-virus"></i></div>
+                        <div class="shield-text">
+                            <h3>Nivel de Protección: ÓPTIMO</h3>
+                            <p>Has eliminado rastro del 45% de los brokers identificados en tu región.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <!-- Historial View -->
             <section id="historial-view" class="view-section">
-                <div class="placeholder-view">
-                    <i class="fas fa-envelope-open-text"></i>
-                    <h2>Registro de Comunicaciones</h2>
-                    <p>Histórico completo de correos enviados y respuestas recibidas de cada Data Broker.</p>
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2><i class="fas fa-envelope-open-text"></i> Registro de Comunicaciones</h2>
+                        <div class="filter-pills">
+                            <span class="pill active">Todo</span>
+                            <span class="pill">Enviados</span>
+                            <span class="pill">Respuestas</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="time">Hace 10 min</div>
+                            <div class="timeline-card glass-card">
+                                <span class="msg-type type-sent">SOLICITUD ENVIADA</span>
+                                <h4>Acxiom Corporation</h4>
+                                <p>Solicitud de "Derecho al Olvido" (GDPR) procesada con éxito.</p>
+                                <span class="msg-id">ID: AG-9283-X</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="time">Hoy, 10:24 AM</div>
+                            <div class="timeline-card glass-card warning">
+                                <span class="msg-type type-reply">RESPUESTA RECIBIDA</span>
+                                <h4>Epsilon Data Management</h4>
+                                <p>El broker solicita confirmación de identidad adicional para proceder.</p>
+                                <button class="btn-sm">Responder</button>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="time">Ayer</div>
+                            <div class="timeline-card glass-card success">
+                                <span class="msg-type type-done">BORRADO CONFIRMADO</span>
+                                <h4>Zodiac Data Services</h4>
+                                <p>Confirmación oficial recibida. Datos eliminados de su servidor central.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
