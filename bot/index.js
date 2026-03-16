@@ -40,7 +40,7 @@ async function runVigilante() {
     try {
         // Simulación de brokers para el MVP
         const brokers = [
-            { name: "Acxiom Corporation", optOutEmail: "privacy@acxiom.com" },
+            { name: "Acxiom Corporation", optOutEmail: "askprivacy@acxiom.com" },
         ];
 
         for (const broker of brokers) {
