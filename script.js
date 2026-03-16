@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><span class="badge ${b.risk === 'Alto' || b.risk === 'Extremadamente Alto' ? 'high' : 'medium'}">${b.risk || 'Alto'}</span></td>
                 <td>${b.createdAt ? new Date(b.createdAt).toLocaleDateString() : 'Detectado'}</td>
                 <td>${statusLabel}</td>
-                <td><button class="btn-icon" onclick="window.requestRemoval('${b.id}', '${b.name}')"><i class="fas ${status === 'pendiente' ? 'fa-paper-plane' : 'fa-eye'}"></i></button></td>
+                <td><button class="btn-icon" onclick="window.requestRemoval('\${b.id}', '\${b.name}')"><i class="fas \${status === 'pendiente' ? 'fa-paper-plane' : 'fa-file-shield'}"></i></button></td>
             `;
             tbody.appendChild(tr);
         });
